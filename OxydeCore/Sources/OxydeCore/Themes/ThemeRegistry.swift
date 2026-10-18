@@ -5,7 +5,7 @@ import Foundation
 /// camera and interface styling are drawn by Oxyde Map; the vector palette is compiled
 /// into a MapLibre style document when the vector engine is enabled.
 public enum ThemeRegistry {
-    public static let defaultThemeID = "oxyde.dark"
+    public static let defaultThemeID = "oxyde.signature"
     public static let defaultNightThemeID = "oxyde.nightdrive"
     public static let defaultDayThemeID = "oxyde.classic"
 
@@ -53,8 +53,37 @@ public enum ThemeRegistry {
 
     // MARK: Built-ins
 
-    static let builtIns: [MapTheme] = [
-        // Essential
+    static let builtIns: [MapTheme] = essentials + automotive + futuristic + gameWorlds + artistic
+
+    /// Shorthand for the many palettes below, in reading order: base, nature, roads,
+    /// buildings, labels.
+    static func pal(bg: HexColor, land: HexColor? = nil, park: HexColor, water: HexColor,
+                    highway: HexColor, major: HexColor, minor: HexColor, casing: HexColor,
+                    building: HexColor, extrusion: HexColor, label: HexColor, halo: HexColor,
+                    roadWidth: Double = 1, labelSize: Double = 1, density: LabelDensity = .medium,
+                    shape: RoadShape = .smooth, roadGlow: Double = 0, bold: Bool = false,
+                    upper: Bool = false, blocks: Bool = false) -> VectorPalette {
+        VectorPalette(background: bg, land: land ?? bg, park: park, water: water, roadHighway: highway,
+                      roadMajor: major, roadMinor: minor, roadCasing: casing, building: building,
+                      buildingExtrusion: extrusion, label: label, labelHalo: halo, roadWidthScale: roadWidth,
+                      labelSizeScale: labelSize, labelDensity: density, roadShape: shape, roadGlow: roadGlow,
+                      boldLabels: bold, uppercaseLabels: upper, blockBuildings: blocks)
+    }
+
+    static let essentials: [MapTheme] = [
+        // The house style, in the oxyde.ro palette: violet on deep ink.
+        MapTheme(id: "oxyde.signature", name: "Oxyde Signature",
+                 summary: "The Oxyde look: deep ink streets, violet highlights and a glowing lavender route.",
+                 family: .essential, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#B49CFF", width: 8, glow: 0.6, glowColor: "#7C4DFF", casing: "#2A1A66",
+                              alternate: "#5A4E80", traveled: "#3A3550"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 50, distance: 650),
+                 palette: pal(bg: "#14121A", park: "#171C1D", water: "#100E22", highway: "#3A2F66",
+                              major: "#2A2638", minor: "#1F1C29", casing: "#0E0C13", building: "#1B1824",
+                              extrusion: "#232030", label: "#B3AEC4", halo: "#14121A", roadGlow: 0.2),
+                 interface: ui("#7C4DFF"), carPlay: car("#B49CFF", dark: true)),
+
         MapTheme(id: "oxyde.classic", name: "Oxyde Classic",
                  summary: "Clean streets, readable labels, clear routes and live traffic colors.",
                  family: .essential, baseMap: .standard, appearance: .automatic, emphasis: .standard,
@@ -132,7 +161,9 @@ public enum ThemeRegistry {
                  camera: CameraStyle(mode: .perspective3D, pitch: 65, distance: 450),
                  palette: lightBase, nightPalette: graphite, interface: ui("#4C8DFF"), carPlay: car("#4C8DFF")),
 
-        // Premium automotive
+    ]
+
+    static let automotive: [MapTheme] = [
         MapTheme(id: "oxyde.automotive", name: "Oxyde Automotive",
                  summary: "Graphite roads, gray buildings, restrained highlights and a prominent route.",
                  family: .automotive, baseMap: .standard, appearance: .dark, emphasis: .muted,
@@ -190,7 +221,62 @@ public enum ThemeRegistry {
                                         labelDensity: .low),
                  interface: ui("#D4AF6A", panel: .glass, type: .standard), carPlay: car("#D4AF6A", dark: true)),
 
-        // Futuristic
+
+        // A dark-navy executive-car look. Original name: no car maker's trademark is used.
+        MapTheme(id: "oxyde.executivenavy", name: "Executive Navy",
+                 summary: "Midnight-navy cluster style with ice-blue route guidance and calm, refined labels.",
+                 family: .automotive, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#6EC3FF", width: 8, glow: 0.5, glowColor: "#2F8CFF", casing: "#062448",
+                              alternate: "#3D5675", traveled: "#2A3A50"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 55, distance: 650),
+                 palette: pal(bg: "#0B1424", park: "#0E1C22", water: "#06101E", highway: "#2B4466",
+                              major: "#1F3350", minor: "#172742", casing: "#050B16", building: "#13213A",
+                              extrusion: "#1A2C4A", label: "#9FB8D8", halo: "#050B16", labelSize: 0.95,
+                              density: .low, roadGlow: 0.15),
+                 interface: ui("#4FA3FF", type: .technical), carPlay: car("#6EC3FF", dark: true)),
+
+        MapTheme(id: "oxyde.grandtourer", name: "Grand Tourer",
+                 summary: "Warm leather-and-walnut tones with a copper route, for long relaxed drives.",
+                 family: .automotive, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#FF8F4A", width: 8, glow: 0.3, casing: "#3A1A06",
+                              alternate: "#6B5A49", traveled: "#4A3F35"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 50, distance: 750),
+                 palette: pal(bg: "#1B1714", park: "#1E211A", water: "#12181D", highway: "#4A3D31",
+                              major: "#3A322B", minor: "#2B2520", casing: "#100D0B", building: "#26201B",
+                              extrusion: "#302821", label: "#D6C3A5", halo: "#100D0B"),
+                 interface: ui("#FF8F4A"), carPlay: car("#FF8F4A", dark: true)),
+
+        MapTheme(id: "oxyde.rally", name: "Rally Stage",
+                 summary: "Dusty gravel-stage colors, terrain shading and a bold red stage line.",
+                 family: .automotive, baseMap: .standard, appearance: .light, emphasis: .standard,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 showsHillshade: true,
+                 route: route("#D7261E", width: 9, casing: "#FFFFFF", casingWidth: 2,
+                              alternate: "#A08A66", traveled: "#B9A88A"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 55, distance: 700),
+                 palette: pal(bg: "#E9DCC3", park: "#C8D29A", water: "#8FB7C9", highway: "#C9733A",
+                              major: "#F6ECD9", minor: "#EFE2C8", casing: "#A08A66", building: "#D9C9A8",
+                              extrusion: "#CDB994", label: "#3B2A1A", halo: "#F6ECD9", bold: true),
+                 interface: ui("#D7261E", panel: .solid, type: .sport), carPlay: car("#D7261E")),
+
+        MapTheme(id: "oxyde.trackday", name: "Track Day",
+                 summary: "Asphalt black, red-and-white kerb edges and a yellow racing line.",
+                 family: .automotive, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .flat, showsBuildings: false, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#FFD400", width: 9, glow: 0.3, casing: "#000000", casingWidth: 2,
+                              alternate: "#6D6D6D", traveled: "#3C3C3C"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 55, distance: 500),
+                 palette: pal(bg: "#111111", land: "#141414", park: "#16201A", water: "#0D1418",
+                              highway: "#3A3A3A", major: "#2B2B2B", minor: "#202020", casing: "#E10600",
+                              building: "#1A1A1A", extrusion: "#222222", label: "#F2F2F2", halo: "#111111",
+                              roadWidth: 1.2, density: .low, bold: true, upper: true),
+                 interface: ui("#FFD400", panel: .solid, type: .sport, maneuver: .cockpit),
+                 carPlay: car("#FFD400", width: 10, dark: true)),
+    ]
+
+    static let futuristic: [MapTheme] = [
         MapTheme(id: "oxyde.neon", name: "Oxyde Neon",
                  summary: "Dark streets with luminous cyan, purple and electric-blue route lines.",
                  family: .futuristic, baseMap: .standard, appearance: .dark, emphasis: .muted,
@@ -246,5 +332,193 @@ public enum ThemeRegistry {
                                         label: "#C4C7CC", labelHalo: "#0D0D0E", roadWidthScale: 1.15,
                                         labelSizeScale: 1.05, labelDensity: .low),
                  interface: ui("#FF1E2D", panel: .solid, type: .sport), carPlay: car("#FF1E2D", width: 10, dark: true)),
+
+        // Cyberpunk: magenta neon roads, cyan route, rain-slick dark city.
+        MapTheme(id: "oxyde.neoncity", name: "Neon City",
+                 summary: "Cyberpunk night city: glowing magenta streets, cyan route and tall dark towers.",
+                 family: .futuristic, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#05D9E8", width: 8, glow: 0.95, glowColor: "#05D9E8", casing: "#012A33",
+                              alternate: "#7A2E8F", traveled: "#2A1F3A"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 60, distance: 550),
+                 palette: pal(bg: "#0A0412", park: "#0D0A18", water: "#05061A", highway: "#B3125E",
+                              major: "#2A0D3A", minor: "#1B0A28", casing: "#0A0412", building: "#140A22",
+                              extrusion: "#1C0A2E", label: "#FF6EC7", halo: "#0A0412", roadGlow: 0.8,
+                              upper: true),
+                 interface: ui("#FF2A6D", type: .technical), carPlay: car("#05D9E8", dark: true)),
+
+        MapTheme(id: "oxyde.chromerain", name: "Chrome Rain",
+                 summary: "Wet teal asphalt, cyan holo labels and a hazard-yellow route.",
+                 family: .futuristic, isPremium: true, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#FCEE0A", width: 7, glow: 0.6, casing: "#2B2800", casingWidth: 1.5,
+                              alternate: "#00A3B0", traveled: "#24323A"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 60, distance: 600),
+                 palette: pal(bg: "#071114", park: "#0A1716", water: "#030B10", highway: "#0F4F57",
+                              major: "#16292E", minor: "#101E22", casing: "#071114", building: "#0E1B1F",
+                              extrusion: "#15282D", label: "#00F0FF", halo: "#071114", roadGlow: 0.35,
+                              upper: true),
+                 interface: ui("#FCEE0A", panel: .solid, type: .technical), carPlay: car("#FCEE0A", dark: true)),
+
+        MapTheme(id: "oxyde.terminal", name: "Terminal",
+                 summary: "Green phosphor on black, like driving inside an old computer terminal.",
+                 family: .futuristic, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .flat, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#39FF14", width: 7, glow: 0.7, casing: "#002200", casingWidth: 1.5,
+                              alternate: "#1F7A3A", traveled: "#123A1E"),
+                 camera: CameraStyle(mode: .headingUp, pitch: 30, distance: 700),
+                 palette: pal(bg: "#000000", land: "#010401", park: "#021006", water: "#000A04",
+                              highway: "#00702A", major: "#003B12", minor: "#00260C", casing: "#000000",
+                              building: "#011A08", extrusion: "#02240B", label: "#33FF66", halo: "#000000",
+                              roadWidth: 0.85, shape: .blocky, roadGlow: 0.4, upper: true),
+                 interface: ui("#39FF14", panel: .solid, type: .technical), carPlay: car("#39FF14", dark: true)),
+    ]
+
+    static let gameWorlds: [MapTheme] = [
+        // Voxel sandbox look: grass, sand roads, plank buildings rounded to whole blocks.
+        MapTheme(id: "oxyde.blockworld", name: "Blockworld",
+                 summary: "A voxel sandbox world: grass blocks, sand roads, blue water and blocky 3D buildings.",
+                 family: .gaming, baseMap: .standard, appearance: .light, emphasis: .standard,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#D10F0F", width: 9, glow: 0.4, glowColor: "#FF4D4D", casing: "#3B0000",
+                              casingWidth: 2, alternate: "#7A6A55", traveled: "#8C8C8C"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 55, distance: 600),
+                 palette: pal(bg: "#7FB24C", park: "#5D8C32", water: "#3F76E4", highway: "#9B9B9B",
+                              major: "#DBCF8E", minor: "#B6966A", casing: "#5E4B32", building: "#9E7B55",
+                              extrusion: "#B08A5A", label: "#FFFFFF", halo: "#3A3A3A", roadWidth: 1.2,
+                              shape: .blocky, bold: true, blocks: true),
+                 interface: ui("#5D8C32", panel: .solid, type: .sport), carPlay: car("#D10F0F")),
+
+        MapTheme(id: "oxyde.pixelquest", name: "Pixel Quest",
+                 summary: "An 8-bit adventure overworld with chunky roads and a bright quest line.",
+                 family: .gaming, baseMap: .standard, appearance: .light, emphasis: .standard,
+                 elevation: .flat, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#D82800", width: 9, casing: "#000000", casingWidth: 2,
+                              alternate: "#7C7C7C", traveled: "#BCBCBC"),
+                 camera: CameraStyle(mode: .northUp, pitch: 0, distance: 700),
+                 palette: pal(bg: "#88D850", park: "#00A800", water: "#3CBCFC", highway: "#FC9838",
+                              major: "#FCFCFC", minor: "#F8D878", casing: "#000000", building: "#A4A4A4",
+                              extrusion: "#BCBCBC", label: "#000000", halo: "#FCFCFC", roadWidth: 1.3,
+                              shape: .blocky, bold: true, upper: true),
+                 interface: ui("#D82800", panel: .solid, type: .sport), carPlay: car("#D82800")),
+
+        // Open-world game minimap: muted slate city, purple waypoint route.
+        MapTheme(id: "oxyde.openworld", name: "Open World",
+                 summary: "Game-minimap style: slate city blocks, blue water and a purple waypoint route.",
+                 family: .gaming, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .flat, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#C45CFF", width: 9, glow: 0.5, casing: "#2A0A40", casingWidth: 2,
+                              alternate: "#6A7380", traveled: "#4A5059"),
+                 camera: CameraStyle(mode: .headingUp, pitch: 0, distance: 600),
+                 palette: pal(bg: "#1D2229", land: "#262C33", park: "#2B3A2D", water: "#3E6B8F",
+                              highway: "#50575F", major: "#3D434B", minor: "#31363D", casing: "#1D2229",
+                              building: "#2E343C", extrusion: "#363D46", label: "#E8E8E8", halo: "#1D2229",
+                              density: .low, bold: true, upper: true),
+                 interface: ui("#C45CFF", panel: .solid, type: .sport), carPlay: car("#C45CFF", dark: true)),
+
+        MapTheme(id: "oxyde.tactical", name: "Tactical Ops",
+                 summary: "Night-vision olive HUD with amber objective route and stencil labels.",
+                 family: .gaming, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#FFB000", width: 8, glow: 0.5, casing: "#2B1D00",
+                              alternate: "#5A6A3F", traveled: "#3A4430"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 50, distance: 650),
+                 palette: pal(bg: "#121610", land: "#161B13", park: "#1B2416", water: "#0F1A1C",
+                              highway: "#4A5A2F", major: "#36422A", minor: "#262F1F", casing: "#0B0E09",
+                              building: "#1E2619", extrusion: "#27311F", label: "#B8D38A", halo: "#0B0E09",
+                              upper: true),
+                 interface: ui("#FFB000", panel: .solid, type: .technical), carPlay: car("#FFB000", dark: true)),
+
+        MapTheme(id: "oxyde.arcade", name: "Retro Arcade",
+                 summary: "Maze-game blue corridors on black with a bright yellow route.",
+                 family: .gaming, isPremium: true, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .flat, showsBuildings: false, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#FFD400", width: 8, glow: 0.6, casing: "#000000", casingWidth: 1.5,
+                              alternate: "#FF6BB5", traveled: "#3A3A70"),
+                 camera: CameraStyle(mode: .northUp, pitch: 0, distance: 650),
+                 palette: pal(bg: "#000000", park: "#05051A", water: "#000033", highway: "#3333FF",
+                              major: "#2121DE", minor: "#1515A0", casing: "#000000", building: "#0A0A2A",
+                              extrusion: "#10103A", label: "#FFB8FF", halo: "#000000", shape: .blocky,
+                              roadGlow: 0.3, bold: true, upper: true),
+                 interface: ui("#FFD400", panel: .solid, type: .sport), carPlay: car("#FFD400", dark: true)),
+    ]
+
+    static let artistic: [MapTheme] = [
+        MapTheme(id: "oxyde.atlas", name: "Fantasy Atlas",
+                 summary: "Aged parchment, ink roads and a crimson route, like an explorer's map.",
+                 family: .artistic, baseMap: .standard, appearance: .light, emphasis: .standard,
+                 elevation: .flat, showsBuildings: true, poiVisibility: .driving, showsTraffic: false,
+                 showsHillshade: true,
+                 route: route("#8B1A1A", width: 7, casing: "#F3E8CC", casingWidth: 1.5,
+                              alternate: "#8A6F47", traveled: "#B8A47E"),
+                 camera: CameraStyle(mode: .northUp, pitch: 0, distance: 750),
+                 palette: pal(bg: "#E8D9B5", park: "#C3C98F", water: "#9FB8B3", highway: "#B08A52",
+                              major: "#F3E8CC", minor: "#E0CFA6", casing: "#8A6F47", building: "#D6C39A",
+                              extrusion: "#CBB68A", label: "#4A3520", halo: "#F3E8CC", upper: true),
+                 interface: ui("#8B1A1A"), carPlay: car("#8B1A1A")),
+
+        MapTheme(id: "oxyde.blueprint", name: "Blueprint",
+                 summary: "Engineering-drawing blue with white line roads and an orange route.",
+                 family: .artistic, isPremium: true, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .flat, showsBuildings: true, poiVisibility: .none, showsTraffic: false,
+                 route: route("#FF5A1F", width: 6, casing: "#0D3B78", casingWidth: 1.5,
+                              alternate: "#9FBBE6", traveled: "#5A80B8"),
+                 camera: CameraStyle(mode: .northUp, pitch: 0, distance: 700),
+                 palette: pal(bg: "#0D3B78", park: "#0F4282", water: "#0A2F60", highway: "#FFFFFF",
+                              major: "#DBE8FF", minor: "#9FBBE6", casing: "#0D3B78", building: "#124A92",
+                              extrusion: "#1656A3", label: "#FFFFFF", halo: "#0D3B78", roadWidth: 0.6,
+                              density: .low, shape: .blocky, upper: true),
+                 interface: ui("#FF5A1F", panel: .solid, type: .technical), carPlay: car("#FF5A1F", dark: true)),
+
+        MapTheme(id: "oxyde.sakura", name: "Sakura",
+                 summary: "Soft cherry-blossom pinks with a deep rose route.",
+                 family: .artistic, baseMap: .standard, appearance: .light, emphasis: .standard,
+                 elevation: .flat, showsBuildings: true, poiVisibility: .all, showsTraffic: true,
+                 route: route("#D6336C", width: 7, casing: "#7A1238",
+                              alternate: "#C79AAA", traveled: "#E3C3CE"),
+                 camera: CameraStyle(mode: .headingUp, pitch: 35, distance: 700),
+                 palette: pal(bg: "#FBEFF2", park: "#F3D1DC", water: "#C9E4F2", highway: "#F7A8C0",
+                              major: "#FFFFFF", minor: "#FFF7F9", casing: "#E8B9C8", building: "#F4DFE5",
+                              extrusion: "#EDD0D9", label: "#7A3B52", halo: "#FFFFFF"),
+                 interface: ui("#D6336C", type: .rounded), carPlay: car("#D6336C")),
+
+        MapTheme(id: "oxyde.arctic", name: "Arctic",
+                 summary: "Ice white and glacier blue, very bright and very clean.",
+                 family: .artistic, baseMap: .standard, appearance: .light, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#0077FF", width: 7, glow: 0.2, casing: "#003C80",
+                              alternate: "#8FB3CC", traveled: "#BFD3E0"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 45, distance: 700),
+                 palette: pal(bg: "#EEF5F9", park: "#DFEEF0", water: "#9CC9E3", highway: "#B8D4E6",
+                              major: "#FFFFFF", minor: "#F7FBFD", casing: "#C4D7E3", building: "#E3EDF3",
+                              extrusion: "#D6E4EC", label: "#2F4A5E", halo: "#FFFFFF"),
+                 interface: ui("#0077FF", type: .rounded), carPlay: car("#0077FF")),
+
+        MapTheme(id: "oxyde.mars", name: "Mars Rover",
+                 summary: "Rust-red planet surface, shaded terrain and a solar-yellow route.",
+                 family: .artistic, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .realistic, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 showsHillshade: true,
+                 route: route("#FFE14D", width: 8, glow: 0.4, casing: "#3A2A00",
+                              alternate: "#9A5A3A", traveled: "#5E3420"),
+                 camera: CameraStyle(mode: .perspective3D, pitch: 55, distance: 700),
+                 palette: pal(bg: "#2A120A", land: "#2F150C", park: "#3A1C10", water: "#1A0F14",
+                              highway: "#8A3A1C", major: "#5E2814", minor: "#44200F", casing: "#1A0904",
+                              building: "#3D1B0E", extrusion: "#4A2312", label: "#FFB38A", halo: "#1A0904",
+                              upper: true),
+                 interface: ui("#FF7A3D", type: .technical), carPlay: car("#FFE14D", dark: true)),
+
+        MapTheme(id: "oxyde.deepocean", name: "Deep Ocean",
+                 summary: "Abyssal teal and navy with bioluminescent labels and a coral route.",
+                 family: .artistic, baseMap: .standard, appearance: .dark, emphasis: .muted,
+                 elevation: .flat, showsBuildings: true, poiVisibility: .driving, showsTraffic: true,
+                 route: route("#FF7A59", width: 8, glow: 0.5, casing: "#3A1206",
+                              alternate: "#2F7A85", traveled: "#14404A"),
+                 camera: CameraStyle(mode: .headingUp, pitch: 40, distance: 700),
+                 palette: pal(bg: "#021A24", land: "#032430", park: "#04303A", water: "#00101A",
+                              highway: "#0E5A6B", major: "#0A4250", minor: "#07323D", casing: "#01121A",
+                              building: "#05303C", extrusion: "#073A48", label: "#6FE3E8", halo: "#01121A",
+                              roadGlow: 0.25),
+                 interface: ui("#FF7A59", type: .rounded), carPlay: car("#FF7A59", dark: true)),
     ]
 }

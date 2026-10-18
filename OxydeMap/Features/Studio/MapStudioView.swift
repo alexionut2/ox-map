@@ -65,9 +65,10 @@ struct MapStudioView: View {
 
     private var livePreview: some View {
         VStack(alignment: .leading, spacing: 8) {
-            OxydeMapView(engine: model.activeEngine, surface: .preview,
+            OxydeMapView(engine: model.engine(for: shown), surface: .preview,
                          state: MapSceneState(theme: shown, nightActive: model.nightActive, settings: settings.value,
                                               cameraCenter: center))
+                .id(model.engine(for: shown))
                 .frame(height: 230)
                 .clipShape(RoundedRectangle(cornerRadius: OX.corner, style: .continuous))
                 .overlay(alignment: .bottomLeading) {
@@ -103,8 +104,8 @@ struct MapStudioView: View {
 
     private var engineNote: String {
         if model.configuration.vectorEngineAvailable {
-            return model.activeEngine == .vector
-                ? "Vector engine: every color, road width and label setting renders."
+            return settings.value.mapEngine == .vector
+                ? "Vector engine: every color, road shape and label style renders. Satellite looks switch to Apple Maps automatically."
                 : "Apple Maps engine: base map, emphasis, 3D, points of interest, traffic, route and camera styling apply. Custom map colors need the vector engine."
         }
         return "Apple Maps engine. Base map, emphasis, 3D, points of interest, traffic, route and camera settings apply. Custom road, land and water colors need the vector engine, which isn't set up in this build (see docs/PROVIDERS.md)."
@@ -140,7 +141,7 @@ struct MapStudioView: View {
             model.haptics.tap(enabled: settings.value.hapticsEnabled)
         } label: {
             VStack(alignment: .leading, spacing: 8) {
-                ThemeThumbnail(theme: t, nightActive: model.nightActive, center: center)
+                ThemeThumbnail(theme: t, engine: model.engine(for: t), nightActive: model.nightActive, center: center)
                     .frame(height: 110)
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .overlay(alignment: .topTrailing) {
@@ -148,9 +149,14 @@ struct MapStudioView: View {
                         else if active { Image(systemName: "checkmark.circle.fill").foregroundStyle(.tint).padding(8) }
                     }
                 Text(t.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                Text(t.summary).font(.caption2).foregroundStyle(.secondary).lineLimit(2)
             }
+            .padding(8)
+            .background(OX.surface, in: RoundedRectangle(cornerRadius: OX.radiusLarge, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: OX.radiusLarge, style: .continuous)
+                .strokeBorder(active ? Color.accentColor : OX.line, lineWidth: active ? 2 : 1))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(OxCardButtonStyle())
         .accessibilityIdentifier("studio.theme.\(t.id)")
         .contextMenu { actions(for: t, locked: locked) }
     }
@@ -186,6 +192,7 @@ struct MapStudioView: View {
         if t.appearance != .light { settings.value.nightThemeID = t.id }
         settings.value.cameraMode = t.camera.mode
         settings.value.activeProfileID = nil
+        model.play.record(.themeApplied(id: t.id))
         previewTheme = nil
         model.haptics.success(enabled: settings.value.hapticsEnabled)
     }
@@ -211,6 +218,7 @@ struct MapStudioView: View {
 /// on top as a sample line, so cards show what the map will actually look like.
 struct ThemeThumbnail: View {
     let theme: MapTheme
+    var engine: MapEngine = .appleMaps
     let nightActive: Bool
     let center: Coordinate
     @State private var image: UIImage?
@@ -218,11 +226,12 @@ struct ThemeThumbnail: View {
     var body: some View {
         ZStack {
             Color(hex: theme.resolvedPalette(nightActive: nightActive).background)
-            if let image { Image(uiImage: image).resizable().scaledToFill() }
+            if let image { Image(uiImage: image).resizable().scaledToFill().transition(.opacity) }
             routeSample
         }
+        .animation(.easeOut(duration: 0.35), value: image != nil)
         .task(id: theme) {
-            image = await ThemeSnapshotCache.shared.image(for: theme, nightActive: nightActive, center: center,
+            image = await ThemeSnapshotCache.shared.image(for: theme, engine: engine, nightActive: nightActive, center: center,
                                                          size: CGSize(width: 340, height: 220))
         }
     }

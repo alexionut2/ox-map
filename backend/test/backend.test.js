@@ -174,3 +174,49 @@ test('TomTom incidents are mapped and merged; provider failure is reported, not 
     assert.equal((await call('GET', `/v1/incidents?bbox=${BBOX}`)).status, 502);
   });
 });
+
+test('convoy: create, join, share positions, leave', async () => {
+  await withServer({}, async ({ call, advance }) => {
+    const created = await call('POST', '/v1/convoys', { body: { name: 'Weekend <b>', displayName: 'Ana', color: '#7c4dff' } });
+    assert.equal(created.status, 200);
+    const code = created.body.code;
+    assert.match(code, /^[A-Z2-9]{6}$/);
+    assert.equal(created.body.name, 'Weekend b');
+    assert.equal(created.body.members[0].me, true);
+    assert.equal(created.body.members[0].color, '#7C4DFF');
+
+    const joined = await call('PUT', `/v1/convoys/${code}/members/me`, { body: { displayName: 'Dan' }, install: OTHER });
+    assert.equal(joined.body.members.length, 2);
+    assert.ok(!JSON.stringify(joined.body).includes(INSTALL), 'install ids stay on the server');
+
+    const pos = await call('PUT', `/v1/convoys/${code}/members/me/position`, { body: { lat: 48.85, lon: 2.35, heading: 90 } });
+    assert.equal(pos.status, 200);
+    const seen = await call('GET', `/v1/convoys/${code}`, { install: OTHER });
+    const ana = seen.body.members.find((m) => m.name === 'Ana');
+    assert.equal(ana.lat, 48.85);
+    assert.equal(ana.me, false);
+
+    // Positions vanish after five minutes without updates.
+    advance(301);
+    const later = await call('GET', `/v1/convoys/${code}`, { install: OTHER });
+    assert.equal(later.body.members.find((m) => m.name === 'Ana').lat, undefined);
+
+    assert.equal((await call('GET', `/v1/convoys/${code}`, { install: '77777777-2222-3333-4444-555555555555' })).status, 404);
+    assert.equal((await call('PUT', `/v1/convoys/${code}/members/me/position`, { body: { lat: 'x' } })).status, 422);
+    assert.equal((await call('DELETE', `/v1/convoys/${code}/members/me`)).status, 204);
+    assert.equal((await call('DELETE', `/v1/convoys/${code}/members/me`, { install: OTHER })).status, 204);
+    assert.equal((await call('GET', `/v1/convoys/${code}`, { install: OTHER })).status, 404);
+  });
+});
+
+test('convoy: full convoys refuse new members', async () => {
+  await withServer({}, async ({ call }) => {
+    const { body } = await call('POST', '/v1/convoys', { body: { displayName: 'Lead' } });
+    for (let i = 1; i < 12; i++) {
+      const id = `${String(i).padStart(8, '0')}-2222-3333-4444-555555555555`;
+      assert.equal((await call('PUT', `/v1/convoys/${body.code}/members/me`, { body: { displayName: `D${i}` }, install: id })).status, 200);
+    }
+    const extra = await call('PUT', `/v1/convoys/${body.code}/members/me`, { body: { displayName: 'X' }, install: OTHER });
+    assert.equal(extra.status, 409);
+  });
+});

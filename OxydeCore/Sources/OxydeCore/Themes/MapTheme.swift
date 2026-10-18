@@ -1,13 +1,15 @@
 import Foundation
 
 public enum ThemeFamily: String, Codable, Sendable, CaseIterable, Identifiable {
-    case essential, automotive, futuristic, custom
+    case essential, automotive, futuristic, gaming, artistic, custom
     public var id: String { rawValue }
     public var title: String {
         switch self {
         case .essential: return "Essential"
         case .automotive: return "Premium Automotive"
         case .futuristic: return "Futuristic"
+        case .gaming: return "Game Worlds"
+        case .artistic: return "Artistic"
         case .custom: return "My Themes"
         }
     }
@@ -135,6 +137,15 @@ public struct CameraStyle: Codable, Hashable, Sendable {
     }
 }
 
+/// How road ends and corners are drawn by the vector engine.
+public enum RoadShape: String, Codable, Sendable, CaseIterable, Identifiable {
+    /// Rounded ends and joins, like most navigation maps.
+    case smooth
+    /// Square ends and sharp corners, for blocky and pixel-art looks.
+    case blocky
+    public var id: String { rawValue }
+}
+
 /// Colors and sizes for the full vector renderer. Apple's MapKit does not expose road,
 /// land or water colors, so these apply only when the vector engine is active; the app
 /// labels every such control accordingly.
@@ -158,13 +169,23 @@ public struct VectorPalette: Codable, Hashable, Sendable {
     public var trafficModerate: HexColor
     public var trafficHeavy: HexColor
     public var trafficClosed: HexColor
+    /// Rounded or blocky road geometry.
+    public var roadShape: RoadShape
+    /// 0 = none, 1 = strong neon glow around highways and main roads.
+    public var roadGlow: Double
+    public var boldLabels: Bool
+    public var uppercaseLabels: Bool
+    /// Rounds building heights up to whole blocks (8 m) for a voxel look.
+    public var blockBuildings: Bool
 
     public init(background: HexColor, land: HexColor, park: HexColor, water: HexColor, roadHighway: HexColor,
                 roadMajor: HexColor, roadMinor: HexColor, roadCasing: HexColor, building: HexColor,
                 buildingExtrusion: HexColor, label: HexColor, labelHalo: HexColor, roadWidthScale: Double = 1,
                 labelSizeScale: Double = 1, labelDensity: LabelDensity = .medium,
                 trafficFree: HexColor = "#2ECC71", trafficModerate: HexColor = "#F5B700",
-                trafficHeavy: HexColor = "#FF5A36", trafficClosed: HexColor = "#B3002D") {
+                trafficHeavy: HexColor = "#FF5A36", trafficClosed: HexColor = "#B3002D",
+                roadShape: RoadShape = .smooth, roadGlow: Double = 0, boldLabels: Bool = false,
+                uppercaseLabels: Bool = false, blockBuildings: Bool = false) {
         self.background = background
         self.land = land
         self.park = park
@@ -184,6 +205,48 @@ public struct VectorPalette: Codable, Hashable, Sendable {
         self.trafficModerate = trafficModerate
         self.trafficHeavy = trafficHeavy
         self.trafficClosed = trafficClosed
+        self.roadShape = roadShape
+        self.roadGlow = roadGlow
+        self.boldLabels = boldLabels
+        self.uppercaseLabels = uppercaseLabels
+        self.blockBuildings = blockBuildings
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case background, land, park, water, roadHighway, roadMajor, roadMinor, roadCasing, building
+        case buildingExtrusion, label, labelHalo, roadWidthScale, labelSizeScale, labelDensity
+        case trafficFree, trafficModerate, trafficHeavy, trafficClosed
+        case roadShape, roadGlow, boldLabels, uppercaseLabels, blockBuildings
+    }
+
+    /// Themes saved or shared before the style extras existed still open; missing extras
+    /// fall back to the classic look.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        background = try c.decode(HexColor.self, forKey: .background)
+        land = try c.decode(HexColor.self, forKey: .land)
+        park = try c.decode(HexColor.self, forKey: .park)
+        water = try c.decode(HexColor.self, forKey: .water)
+        roadHighway = try c.decode(HexColor.self, forKey: .roadHighway)
+        roadMajor = try c.decode(HexColor.self, forKey: .roadMajor)
+        roadMinor = try c.decode(HexColor.self, forKey: .roadMinor)
+        roadCasing = try c.decode(HexColor.self, forKey: .roadCasing)
+        building = try c.decode(HexColor.self, forKey: .building)
+        buildingExtrusion = try c.decode(HexColor.self, forKey: .buildingExtrusion)
+        label = try c.decode(HexColor.self, forKey: .label)
+        labelHalo = try c.decode(HexColor.self, forKey: .labelHalo)
+        roadWidthScale = try c.decode(Double.self, forKey: .roadWidthScale)
+        labelSizeScale = try c.decode(Double.self, forKey: .labelSizeScale)
+        labelDensity = try c.decode(LabelDensity.self, forKey: .labelDensity)
+        trafficFree = try c.decode(HexColor.self, forKey: .trafficFree)
+        trafficModerate = try c.decode(HexColor.self, forKey: .trafficModerate)
+        trafficHeavy = try c.decode(HexColor.self, forKey: .trafficHeavy)
+        trafficClosed = try c.decode(HexColor.self, forKey: .trafficClosed)
+        roadShape = try c.decodeIfPresent(RoadShape.self, forKey: .roadShape) ?? .smooth
+        roadGlow = try c.decodeIfPresent(Double.self, forKey: .roadGlow) ?? 0
+        boldLabels = try c.decodeIfPresent(Bool.self, forKey: .boldLabels) ?? false
+        uppercaseLabels = try c.decodeIfPresent(Bool.self, forKey: .uppercaseLabels) ?? false
+        blockBuildings = try c.decodeIfPresent(Bool.self, forKey: .blockBuildings) ?? false
     }
 }
 

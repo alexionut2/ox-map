@@ -26,6 +26,10 @@ protocol MapController: AnyObject {
     func setIncidents(_ incidents: [Incident])
     func setPlaces(_ places: [Place], selectedID: String?)
     func setDestinations(_ waypoints: [Waypoint])
+    /// Explorer mode squares, as closed rings.
+    func setExplored(_ polygons: [[Coordinate]])
+    /// Friends in the convoy (never includes the driver).
+    func setConvoy(_ members: [ConvoyMember])
     /// Shows the navigation puck at a snapped position; `nil` returns to the system dot.
     func setVehicle(_ coordinate: Coordinate?, bearing: Double?)
     /// Moves the navigation camera to follow the vehicle.

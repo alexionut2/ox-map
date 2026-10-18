@@ -5,7 +5,7 @@ public enum MapEngine: String, Codable, Sendable, CaseIterable, Identifiable {
     /// Apple MapKit: the default. Free, no keys, works in CarPlay.
     case appleMaps
     /// MapLibre Native with a vector tile source: full control over every map color.
-    /// Needs the MapLibre package and a tile provider key.
+    /// Uses free OpenFreeMap tiles unless the build configures another provider.
     case vector
     public var id: String { rawValue }
     public var title: String { self == .appleMaps ? "Apple Maps engine" : "Vector engine" }
@@ -17,6 +17,7 @@ public enum ThemeProperty: String, CaseIterable, Sendable {
     case routeColor, routeWidth, routeGlow, routeCasing, alternateRouteColor
     case cameraMode, cameraPitch, cameraDistance
     case backgroundColor, landColor, waterColor, parkColor, roadColors, roadWidth, buildingColors
+    case roadShape, roadGlow, labelStyle
     case labelVisibility, labelDensity, labelSize, labelColors
     case trafficColors, nightPalette
     case accent, panelStyle, typography, maneuverPanel
@@ -65,6 +66,7 @@ public enum RendererCapabilities {
             case .labelVisibility:
                 return .partial("Apple Maps hides labels only on Satellite; Standard and Hybrid always show them.")
             case .backgroundColor, .landColor, .waterColor, .parkColor, .roadColors, .roadWidth, .buildingColors,
+                 .roadShape, .roadGlow, .labelStyle,
                  .labelDensity, .labelSize, .labelColors, .trafficColors, .nightPalette:
                 return .unsupported("Apple Maps does not allow custom map colors or sizes. Switch to the vector engine.")
             }

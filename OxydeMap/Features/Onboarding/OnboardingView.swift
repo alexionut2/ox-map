@@ -12,7 +12,9 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            OX.black.ignoresSafeArea()
+            OX.ink.ignoresSafeArea()
+            RadialGradient(colors: [OX.brand.opacity(0.25), .clear], center: .top, startRadius: 10, endRadius: 420)
+                .ignoresSafeArea()
             TabView(selection: $page) {
                 welcome.tag(0)
                 customize.tag(1)
@@ -43,11 +45,12 @@ struct OnboardingView: View {
         VStack(alignment: .leading, spacing: 20) {
             Spacer()
             Text("Make it yours").font(.largeTitle.bold())
-            Text("Fifteen map styles, from clean daily driving to deep-black night modes and neon. Build your own in Map Studio and take it into CarPlay.")
+            Text("\(ThemeRegistry.all.count) map styles, from clean daily driving and executive night modes to cyberpunk neon, block worlds and game minimaps. Build your own in Map Studio and take it into CarPlay.")
                 .foregroundStyle(.secondary)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(ThemeRegistry.all.prefix(8)) { t in
+                    ForEach(["oxyde.signature", "oxyde.neoncity", "oxyde.blockworld", "oxyde.executivenavy", "oxyde.openworld",
+                             "oxyde.pixelquest", "oxyde.atlas", "oxyde.synthwave"].compactMap(ThemeRegistry.theme(id:))) { t in
                         VStack(alignment: .leading, spacing: 8) {
                             RoundedRectangle(cornerRadius: 14).fill(Color(hex: t.palette.background))
                                 .overlay(alignment: .bottomLeading) {

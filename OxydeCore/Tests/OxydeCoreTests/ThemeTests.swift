@@ -8,13 +8,17 @@ final class ThemeTests: XCTestCase {
                                          terrainTileJSONURL: "https://tiles.example/terrain.json",
                                          attribution: "© Example")
 
-    func testRegistryHasAllFifteenThemesWithUniqueIDs() {
+    func testRegistryHasAllThemesWithUniqueIDs() {
         let all = ThemeRegistry.all
-        XCTAssertEqual(all.count, 15)
-        XCTAssertEqual(Set(all.map(\.id)).count, 15)
-        XCTAssertEqual(ThemeRegistry.themes(in: .essential).count, 7)
-        XCTAssertEqual(ThemeRegistry.themes(in: .automotive).count, 4)
-        XCTAssertEqual(ThemeRegistry.themes(in: .futuristic).count, 4)
+        XCTAssertEqual(all.count, 34)
+        XCTAssertEqual(Set(all.map(\.id)).count, 34)
+        XCTAssertEqual(ThemeRegistry.themes(in: .essential).count, 8)
+        XCTAssertEqual(ThemeRegistry.themes(in: .automotive).count, 8)
+        XCTAssertEqual(ThemeRegistry.themes(in: .futuristic).count, 7)
+        XCTAssertEqual(ThemeRegistry.themes(in: .gaming).count, 5)
+        XCTAssertEqual(ThemeRegistry.themes(in: .artistic).count, 6)
+        // Most looks stay free; premium is cosmetic only.
+        XCTAssertGreaterThan(all.filter { !$0.isPremium }.count, 25)
         XCTAssertNotNil(ThemeRegistry.theme(id: ThemeRegistry.defaultThemeID))
         XCTAssertNotNil(ThemeRegistry.theme(id: ThemeRegistry.defaultNightThemeID))
         XCTAssertNotNil(ThemeRegistry.theme(id: ThemeRegistry.defaultDayThemeID))
@@ -190,5 +194,38 @@ final class ThemeTests: XCTestCase {
         let g = VectorStyleBuilder.routeGeoJSON(remaining: Fixtures.lRoute().coordinates, traveled: [], alternates: [[Fixtures.origin]])
         XCTAssertEqual(g["features"]?.arrayValue?.count, 1)
         XCTAssertEqual(g["features"]?.arrayValue?.first?["properties"]?["role"]?.stringValue, "primary")
+    }
+
+    func testStyleExtrasCompileIntoTheStyle() throws {
+        let block = ThemeRegistry.theme(id: "oxyde.blockworld")!
+        let style = VectorStyleBuilder.style(for: block, nightActive: false, configuration: config)
+        let layers = style["layers"]?.arrayValue ?? []
+        let road = layers.first { $0["id"] == "road-primary" }
+        XCTAssertEqual(road?["layout"]?["line-cap"], "square")
+        let place = layers.first { $0["id"] == "label-place" }
+        XCTAssertEqual(place?["layout"]?["text-font"], ["Noto Sans Bold"])
+        let buildings = layers.first { $0["id"] == "building-3d" }
+        XCTAssertEqual(buildings?["paint"]?["fill-extrusion-height"]?.arrayValue?.first, "*")
+
+        let neon = ThemeRegistry.theme(id: "oxyde.neoncity")!
+        let neonLayers = VectorStyleBuilder.style(for: neon, nightActive: true, configuration: config)["layers"]?.arrayValue ?? []
+        XCTAssertTrue(neonLayers.contains { $0["id"] == "road-highway-glow" })
+        let neonPlace = neonLayers.first { $0["id"] == "label-place" }
+        XCTAssertEqual(neonPlace?["layout"]?["text-transform"], "uppercase")
+        XCTAssertTrue(neonLayers.contains { $0["id"] == "explored" })
+    }
+
+    func testPalettesSavedBeforeStyleExtrasStillDecode() throws {
+        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(ThemeRegistry.lightBase)) as! [String: Any]
+        for key in ["roadShape", "roadGlow", "boldLabels", "uppercaseLabels", "blockBuildings"] { json.removeValue(forKey: key) }
+        let old = try JSONSerialization.data(withJSONObject: json)
+        let decoded = try JSONDecoder().decode(VectorPalette.self, from: old)
+        XCTAssertEqual(decoded, ThemeRegistry.lightBase)
+    }
+
+    func testOpenFreeMapDefaultIsCompleteAndKeyless() {
+        let c = VectorTileConfiguration.openFreeMap
+        XCTAssertTrue(c.isComplete)
+        XCTAssertFalse(c.vectorTileJSONURL.contains("key="))
     }
 }

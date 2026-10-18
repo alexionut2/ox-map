@@ -7,8 +7,9 @@ import OxydeCore
 struct AppConfiguration {
     /// Base URL of the Oxyde backend (traffic incidents and community reports).
     let backendBaseURL: URL?
-    /// Vector engine tile source. These are client-side, domain/bundle-restricted keys
-    /// meant to be embedded (e.g. MapTiler "public" keys). Never put server secrets here.
+    /// Vector engine tile source: OpenFreeMap unless the build sets another provider. Any
+    /// keys here are client-side, restricted keys meant to be embedded (e.g. MapTiler
+    /// "public" keys). Never put server secrets here.
     let vectorTiles: VectorTileConfiguration?
     let premiumProductIDs: [String]
 
@@ -30,7 +31,8 @@ struct AppConfiguration {
                 terrainTileJSONURL: string("OXVectorTerrainTileJSONURL"),
                 attribution: string("OXVectorAttribution") ?? "© OpenMapTiles © OpenStreetMap contributors")
         } else {
-            vectorTiles = nil
+            // Free, keyless OpenFreeMap tiles so custom map styles work out of the box.
+            vectorTiles = .openFreeMap
         }
         premiumProductIDs = (string("OXPremiumProductIDs") ?? "")
             .components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }

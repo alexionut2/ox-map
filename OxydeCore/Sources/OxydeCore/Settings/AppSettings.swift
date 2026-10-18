@@ -63,6 +63,24 @@ public enum TripPrecision: String, Codable, Sendable, CaseIterable, Identifiable
 
 /// Every user preference. Stored as JSON in UserDefaults; synced through iCloud only when
 /// the user has turned sync on.
+/// The marker that shows the driver's position while navigating.
+public enum VehicleIcon: String, Codable, Sendable, CaseIterable, Identifiable {
+    case arrow, sedan, sports, suv, motorbike, rocket, saucer, block
+    public var id: String { rawValue }
+    public var title: String {
+        switch self {
+        case .arrow: return "Arrow"
+        case .sedan: return "Sedan"
+        case .sports: return "Sports Car"
+        case .suv: return "SUV"
+        case .motorbike: return "Motorbike"
+        case .rocket: return "Rocket"
+        case .saucer: return "Flying Saucer"
+        case .block: return "Block Cart"
+        }
+    }
+}
+
 public struct AppSettings: Codable, Hashable, Sendable {
     public var hasCompletedOnboarding: Bool
     public var activeProfileID: String?
@@ -106,19 +124,28 @@ public struct AppSettings: Codable, Hashable, Sendable {
     public var tripPrecision: TripPrecision
     public var cloudSyncEnabled: Bool
 
+    // Play
+    public var vehicleIcon: VehicleIcon
+    /// Explorer mode: remembers explored squares on this device. Off until turned on.
+    public var explorerEnabled: Bool
+    /// Earn XP and achievements. Kept on the device.
+    public var progressEnabled: Bool
+    /// The name shown to friends in a convoy.
+    public var convoyDisplayName: String
+
     public init() {
         hasCompletedOnboarding = false
         activeProfileID = DriverProfile.dailyDriver.id
         defaultThemeID = ThemeRegistry.defaultThemeID
         dayThemeID = ThemeRegistry.defaultDayThemeID
         nightThemeID = ThemeRegistry.defaultNightThemeID
-        dayNightMode = .system
+        dayNightMode = .off
         accentOverride = nil
         speedometer = .digital
         arrivalDisplay = .both
         hapticsEnabled = true
         hiddenElements = []
-        mapEngine = .appleMaps
+        mapEngine = .vector
         showsTraffic = true
         showsPOI = true
         labelDensity = .medium
@@ -135,6 +162,10 @@ public struct AppSettings: Codable, Hashable, Sendable {
         tripHistoryEnabled = false
         tripPrecision = .approximate
         cloudSyncEnabled = false
+        vehicleIcon = .arrow
+        explorerEnabled = false
+        progressEnabled = true
+        convoyDisplayName = ""
     }
 
     /// The theme ID to render now, given the day/night state.
@@ -148,6 +179,7 @@ public struct AppSettings: Codable, Hashable, Sendable {
     /// Clamps values that may have come from an older version or another device.
     public mutating func normalize() {
         zoomScale = min(1.6, max(0.6, zoomScale))
+        convoyDisplayName = String(convoyDisplayName.prefix(24))
         voice.volume = min(1, max(0, voice.volume))
         voice.rate = min(1.2, max(0.8, voice.rate))
     }
@@ -160,7 +192,8 @@ extension AppSettings {
              accentOverride, speedometer, arrivalDisplay, hapticsEnabled, hiddenElements, mapEngine, showsTraffic,
              showsPOI, labelDensity, cameraMode, zoomScale, routePreferences, units, voice, rerouteAutomatically,
              carPlayThemeID, communityReportsEnabled, showsPoliceReports, showsSpeedCameraReports,
-             tripHistoryEnabled, tripPrecision, cloudSyncEnabled
+             tripHistoryEnabled, tripPrecision, cloudSyncEnabled, vehicleIcon, explorerEnabled, progressEnabled,
+             convoyDisplayName
     }
 
     public init(from decoder: Decoder) throws {
@@ -197,6 +230,10 @@ extension AppSettings {
         tripHistoryEnabled = get(.tripHistoryEnabled, tripHistoryEnabled)
         tripPrecision = get(.tripPrecision, tripPrecision)
         cloudSyncEnabled = get(.cloudSyncEnabled, cloudSyncEnabled)
+        vehicleIcon = get(.vehicleIcon, vehicleIcon)
+        explorerEnabled = get(.explorerEnabled, explorerEnabled)
+        progressEnabled = get(.progressEnabled, progressEnabled)
+        convoyDisplayName = get(.convoyDisplayName, convoyDisplayName)
         normalize()
     }
 }

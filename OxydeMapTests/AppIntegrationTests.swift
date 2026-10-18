@@ -63,4 +63,16 @@ final class AppIntegrationTests: XCTestCase {
         XCTAssertFalse(caps.providesSpeedLimits)
         XCTAssertFalse(caps.supportsAvoidFerries)
     }
+
+    func testVectorTilesDefaultToOpenFreeMap() {
+        // Without provider keys in Secrets.xcconfig the free OpenFreeMap source is used.
+        XCTAssertEqual(AppConfiguration.current.vectorTiles?.isComplete, true)
+    }
+
+    func testEveryVehicleIconRenders() {
+        for icon in VehicleIcon.allCases {
+            let img = VehicleIconRenderer.image(for: icon, tint: .systemPurple)
+            XCTAssertEqual(img.size, VehicleIconRenderer.size, "\(icon)")
+        }
+    }
 }

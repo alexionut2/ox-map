@@ -6,8 +6,8 @@ Last updated 2026-10-18. The in-app **Settings > Diagnostics** screen shows the 
 
 | Check | Result |
 |---|---|
-| OxydeCore unit tests (engine, guidance, themes, rules, networking) | **70 passed**, run on Linux with Swift 5.10 |
-| Backend tests | **13 passed**, Node 22 |
+| OxydeCore unit tests (engine, guidance, themes, rules, networking, explorer, XP, convoy) | **78 passed**, run on Linux with Swift 5.10 |
+| Backend tests (reports, incidents, convoy) | **15 passed**, Node 22 |
 | Xcode project generation from `project.yml` | Succeeds |
 | Swift syntax parse of every app file | Succeeds |
 | **iOS compile, app tests, UI tests** | **Not run yet.** No Mac was available. The first GitHub CI run is the first real iOS compile, and some compile fixes should be expected. |
@@ -23,6 +23,7 @@ Last updated 2026-10-18. The in-app **Settings > Diagnostics** screen shows the 
 | 4 | Traffic incidents, community reports, backend | Done (backend needs deploying) |
 | 5 | Map Studio, theme editor, export and import, CarPlay, Siri reporting | Done (CarPlay needs Apple's entitlement) |
 | 6 | Premium, trips, diagnostics, privacy, tests, docs, cloud build | Done |
+| 7 | 34 map styles on MapLibre + OpenFreeMap, oxyde.ro look, Garage (XP, badges, vehicles), Explorer mode, Convoy, animations | Done; first compile with MapLibre pending on CI |
 
 ## Feature list
 

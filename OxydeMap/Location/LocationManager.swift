@@ -38,6 +38,8 @@ final class LocationManager: NSObject {
 
     /// Called for every accepted fix (navigation subscribes to this).
     @ObservationIgnored var onFix: ((LocationFix) -> Void)?
+    /// Extra listeners (Explorer mode, XP, convoy) that run after `onFix`.
+    @ObservationIgnored var fixObservers: [(LocationFix) -> Void] = []
 
     @ObservationIgnored private let manager = CLLocationManager()
 
@@ -123,6 +125,7 @@ extension LocationManager: CLLocationManagerDelegate {
                 self.lastFix = fix
                 self.lastError = nil
                 self.onFix?(fix)
+                self.fixObservers.forEach { $0(fix) }
             }
         }
     }

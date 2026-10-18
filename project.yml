@@ -17,10 +17,10 @@ settings:
 packages:
   OxydeCore:
     path: OxydeCore
-  # Optional vector engine. Uncomment to link MapLibre (docs/PROVIDERS.md).
-  # MapLibre:
-  #   url: https://github.com/maplibre/maplibre-gl-native-distribution
-  #   from: "6.0.0"
+  # Vector engine for custom map styles (free OpenFreeMap tiles by default).
+  MapLibre:
+    url: https://github.com/maplibre/maplibre-gl-native-distribution
+    from: "6.0.0"
 targets:
   OxydeMap:
     type: application
@@ -35,7 +35,7 @@ targets:
         buildPhase: none
     dependencies:
       - package: OxydeCore
-      # - package: MapLibre
+      - package: MapLibre
       - sdk: CarPlay.framework
     settings:
       base:

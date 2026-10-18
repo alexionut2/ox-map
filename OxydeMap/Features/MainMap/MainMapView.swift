@@ -3,7 +3,7 @@ import SwiftData
 import OxydeCore
 
 enum MainSheet: String, Identifiable {
-    case search, studio, settings, reports, saved, trips, layers, diagnostics, premium
+    case search, studio, settings, reports, saved, trips, layers, diagnostics, premium, garage, convoy
     var id: String { rawValue }
 }
 
@@ -40,6 +40,8 @@ struct MainMapView: View {
             .padding(.bottom, 8)
 
             if !focusMode { controlsColumn }
+
+            CelebrationOverlay()
         }
         .sheet(item: $sheet) { s in sheetContent(s) }
         .sheet(item: $selectedIncident) { inc in
@@ -63,6 +65,7 @@ struct MainMapView: View {
         }
         .onChange(of: nav.selectedRouteID) { _, _ in if nav.phase == .previewing { showOverview() } }
         .onChange(of: scenePhase) { _, p in if p == .active { model.refreshDayNight() } }
+        .onChange(of: model.pendingConvoyCode) { _, code in if code != nil { sheet = .convoy } }
     }
 
     // MARK: Map
@@ -78,6 +81,8 @@ struct MainMapView: View {
             incidents: model.traffic.visibleIncidents(settings: settings.value),
             places: navigating ? [] : places, selectedPlaceID: nav.selectedPlace?.id,
             waypoints: nav.stops,
+            explored: model.play.exploredNear(location.lastFix?.coordinate),
+            convoy: model.convoy.visibleMembers,
             vehicle: navigating ? (nav.progress?.snappedCoordinate ?? nav.lastFix?.coordinate) : nil,
             vehicleBearing: navigating ? (nav.progress?.routeBearing ?? nav.lastFix?.course) : nil,
             vehicleSpeed: max(0, nav.lastFix?.speed ?? 0),
@@ -136,6 +141,15 @@ struct MainMapView: View {
                 .oxPanel(theme.interface.panel, cornerRadius: 25)
                 .accessibilityIdentifier("main.search")
 
+                if settings.value.progressEnabled {
+                    Button { sheet = .garage } label: {
+                        LevelBadge().frame(width: 50, height: 50)
+                    }
+                    .buttonStyle(.plain)
+                    .oxPanel(theme.interface.panel, cornerRadius: 25)
+                    .accessibilityIdentifier("main.garage")
+                }
+
                 Button { sheet = .settings } label: {
                     Image(systemName: "person.crop.circle").font(.title2).frame(width: 50, height: 50)
                 }
@@ -144,7 +158,22 @@ struct MainMapView: View {
                 .accessibilityLabel("Settings")
                 .accessibilityIdentifier("main.settings")
             }
+            .transition(.move(edge: .top).combined(with: .opacity))
             StatusBanners()
+            if let snap = model.convoy.snapshot {
+                Button { sheet = .convoy } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "car.2.fill").foregroundStyle(OX.gradient)
+                        Text("Convoy \(snap.code)").font(.subheadline.weight(.semibold)).monospaced()
+                        Text("· \(snap.members.count) drivers").font(.subheadline).foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 8)
+                    .oxPanel(theme.interface.panel, cornerRadius: 18)
+                }
+                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .transition(.scale.combined(with: .opacity))
+            }
         }
     }
 
@@ -207,6 +236,8 @@ struct MainMapView: View {
                 FloatingButton(symbol: "exclamationmark.bubble.fill", label: "Report") { sheet = .reports }
                     .accessibilityIdentifier("main.report")
             }
+            FloatingButton(symbol: "car.2.fill", label: "Convoy", isActive: model.convoy.snapshot != nil) { sheet = .convoy }
+                .accessibilityIdentifier("main.convoy")
             FloatingButton(symbol: focusMode ? "rectangle.arrowtriangle.2.inward" : "rectangle.arrowtriangle.2.outward",
                            label: focusMode ? "Show controls" : "Clean view", size: 40) { focusMode.toggle() }
         }
@@ -259,6 +290,10 @@ struct MainMapView: View {
         case .layers: LayersSheet().presentationDetents([.medium])
         case .diagnostics: NavigationStack { DiagnosticsView() }
         case .premium: PremiumView()
+        case .garage: GarageView(onConvoy: { sheet = nil; Task { @MainActor in try? await Task.sleep(nanoseconds: 450_000_000); sheet = .convoy } })
+        case .convoy:
+            ConvoyView(code: model.pendingConvoyCode ?? "")
+                .onAppear { model.pendingConvoyCode = nil }
         }
     }
 }

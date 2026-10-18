@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import { RateLimiter, iso, parseBBox, validateSubmission } from './rules.js';
 import { reportDTO, reportIncidentDTO } from './store.js';
+import { CODE_RE, ConvoyStore } from './convoy.js';
 
 const JSON_LIMIT = 8 * 1024;
 
@@ -31,7 +32,8 @@ const INSTALL_RE = /^[A-Za-z0-9-]{8,64}$/;
  * Builds the HTTP handler. `providers` are incident sources (e.g. TomTom); none means the
  * incidents endpoint returns community reports only and says so in `sources`.
  */
-export function createApp({ store, providers = [], now = () => Date.now(), adminToken = null, limiter = new RateLimiter() }) {
+export function createApp({ store, providers = [], now = () => Date.now(), adminToken = null, limiter = new RateLimiter(),
+  convoys = new ConvoyStore({ now }) }) {
   const idempotency = new Map();
 
   async function handle(req, res) {
@@ -115,7 +117,27 @@ export function createApp({ store, providers = [], now = () => Date.now(), admin
       return store.remove(adminMatch[1]) ? send(res, 204) : send(res, 404, { error: 'Not found' });
     }
 
+    if (req.method === 'POST' && path === '/v1/convoys') {
+      const body = (await readJSON(req)) || {};
+      return convoyResult(res, convoys.create(body, install), install);
+    }
+
+    const convoyMatch = path.match(/^\/v1\/convoys\/([A-Z0-9]{6})(\/.*)?$/);
+    if (convoyMatch && CODE_RE.test(convoyMatch[1])) {
+      const [, code, rest = ''] = convoyMatch;
+      if (req.method === 'GET' && rest === '') return convoyResult(res, convoys.get(code, install), install);
+      if (req.method === 'PUT' && rest === '/members/me') return convoyResult(res, convoys.join(code, (await readJSON(req)) || {}, install), install);
+      if (req.method === 'PUT' && rest === '/members/me/position') return convoyResult(res, convoys.update(code, (await readJSON(req)) || {}, install), install);
+      if (req.method === 'PUT' && rest === '/destination') return convoyResult(res, convoys.setDestination(code, (await readJSON(req)) || {}, install), install);
+      if (req.method === 'DELETE' && rest === '/members/me') return convoys.leave(code, install) ? send(res, 204) : send(res, 404, { error: 'Not in this convoy' });
+    }
+
     return send(res, 404, { error: 'Not found' });
+  }
+
+  function convoyResult(res, result, install) {
+    if (result.error) return send(res, result.status, { error: result.error });
+    return send(res, 200, convoys.dto(result.convoy, install));
   }
 
   return createServer((req, res) => {

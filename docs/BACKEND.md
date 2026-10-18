@@ -42,6 +42,14 @@ Every `/v1` request carries `X-Oxyde-Install`, a random per-install ID that is u
 | `POST /v1/reports` | Body `{category, lat, lon, heading?, reportedAt, note?}`. Supports `Idempotency-Key`. Returns `201` with a new report, or `200` when it confirmed an existing nearby report. Returns `422` for invalid input and `429` with `Retry-After` when rate-limited. |
 | `POST /v1/reports/{id}/votes` | Body `{vote: "confirm" or "dismiss"}`. Returns `{report?, removed}`, or `409` if this install already voted or is the reporter. |
 | `DELETE /v1/admin/reports/{id}` | Needs `Authorization: Bearer $OXYDE_ADMIN_TOKEN`. |
+| `POST /v1/convoys` | Body `{name?, displayName?, color?}`. Creates a convoy with a 6-character code and joins it. Returns the convoy. |
+| `PUT /v1/convoys/{code}/members/me` | Body `{displayName?, color?}`. Joins (max 12 drivers, `409` when full). |
+| `PUT /v1/convoys/{code}/members/me/position` | Body `{lat, lon, heading?}`. Stores the position (at most every 2 s) and returns everyone's latest. |
+| `PUT /v1/convoys/{code}/destination` | Body `{lat, lon, name?}`. Shares a group destination. |
+| `GET /v1/convoys/{code}` | Members only (`404` otherwise). |
+| `DELETE /v1/convoys/{code}/members/me` | Leaves; the convoy ends when the last driver leaves. |
+
+Convoys live only in memory and are never written to disk. Positions are dropped after 5 minutes without an update, convoys end 6 hours after their last activity, and install IDs are never returned to other members.
 
 ## Rules
 

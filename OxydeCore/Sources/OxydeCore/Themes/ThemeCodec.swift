@@ -88,6 +88,7 @@ public enum ThemeCodec {
         var p = p
         p.roadWidthScale = min(2, max(0.5, p.roadWidthScale))
         p.labelSizeScale = min(1.6, max(0.7, p.labelSizeScale))
+        p.roadGlow = min(1, max(0, p.roadGlow))
         return p
     }
 

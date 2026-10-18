@@ -3,6 +3,29 @@ import MapLibre
 import UIKit
 import OxydeCore
 
+/// Point annotations Oxyde adds on top of the vector map.
+final class VehiclePointAnnotation: MLNPointAnnotation {}
+final class ConvoyPointAnnotation: MLNPointAnnotation {
+    var member: ConvoyMember?
+}
+
+/// Writes compiled style documents to temporary files for MapLibre to load.
+enum VectorStyleFile {
+    /// Hash values change between launches, so file names carry a per-launch prefix.
+    private static let launch = UUID().uuidString.prefix(8)
+
+    @MainActor
+    static func url(for theme: MapTheme, nightActive: Bool, tiles: VectorTileConfiguration) throws -> URL {
+        let key = "\(theme.hashValue)-\(nightActive)-\(tiles.hashValue)"
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("oxyde-style-\(launch)-\(abs(key.hashValue % 1_000_000_000)).json")
+        if !FileManager.default.fileExists(atPath: url.path) {
+            let style = VectorStyleBuilder.style(for: theme, nightActive: nightActive, configuration: tiles)
+            try style.data().write(to: url, options: .atomic)
+        }
+        return url
+    }
+}
+
 /// Vector engine built on MapLibre Native. It renders the theme's full palette (roads,
 /// land, water, buildings, labels) from the style document compiled by
 /// `VectorStyleBuilder`. Compiled only when the MapLibre package is added to the
@@ -32,6 +55,10 @@ final class VectorMapController: NSObject, MapController, MLNMapViewDelegate {
     private var incidents: [Incident] = []
     private var placeAnnotations: [MLNPointAnnotation: Place] = [:]
     private var waypointAnnotations: [MLNPointAnnotation] = []
+    private var explored: [[Coordinate]] = []
+    private var convoyAnnotations: [ConvoyPointAnnotation] = []
+    private var vehicleAnnotation: VehiclePointAnnotation?
+    private var vehicleBearing: Double = 0
 
     init(surface: MapSurface, tiles: VectorTileConfiguration) {
         self.surface = surface
@@ -57,15 +84,21 @@ final class VectorMapController: NSObject, MapController, MLNMapViewDelegate {
         effective.palette.labelDensity = settings.labelDensity
         if !settings.showsPOI { effective.poiVisibility = .none }
         effective.nightPalette?.labelDensity = settings.labelDensity
+        refreshVehicleView()
         let key = "\(effective.hashValue)-\(nightActive)"
         guard key != styleKey else { return }
         styleKey = key
-        let style = VectorStyleBuilder.style(for: effective, nightActive: nightActive, configuration: tiles)
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("oxyde-style-\(abs(key.hashValue)).json")
         do {
-            try style.data().write(to: url, options: .atomic)
+            let url = try VectorStyleFile.url(for: effective, nightActive: nightActive, tiles: tiles)
             styleLoaded = false
-            mapView.styleURL = url
+            if mapView.styleURL != nil, surface == .phone {
+                // Cross-fade between map styles.
+                UIView.transition(with: mapView, duration: 0.4, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                    self.mapView.styleURL = url
+                }
+            } else {
+                mapView.styleURL = url
+            }
         } catch {
             assertionFailure("Could not write style: \(error)")
         }
@@ -75,6 +108,7 @@ final class VectorMapController: NSObject, MapController, MLNMapViewDelegate {
         styleLoaded = true
         pushRoutes()
         pushIncidents()
+        pushExplored()
     }
 
     func setRoutes(_ routes: [Route], selectedID: UUID?, traveledDistance: Double?) {
@@ -141,14 +175,93 @@ final class VectorMapController: NSObject, MapController, MLNMapViewDelegate {
         mapView.addAnnotations(waypointAnnotations)
     }
 
+    func setExplored(_ polygons: [[Coordinate]]) {
+        explored = surface == .phone ? polygons : []
+        pushExplored()
+    }
+
+    private func pushExplored() {
+        guard styleLoaded, let source = mapView.style?.source(withIdentifier: VectorStyleBuilder.exploredSourceID) as? MLNShapeSource else { return }
+        let json = VectorStyleBuilder.exploredGeoJSON(explored)
+        if let data = try? json.data(), let shape = try? MLNShape(data: data, encoding: String.Encoding.utf8.rawValue) {
+            source.shape = shape
+        }
+    }
+
+    func setConvoy(_ members: [ConvoyMember]) {
+        mapView.removeAnnotations(convoyAnnotations)
+        convoyAnnotations = members.compactMap { m in
+            guard let c = m.coordinate else { return nil }
+            let a = ConvoyPointAnnotation()
+            a.member = m
+            a.coordinate = c.cl
+            a.title = m.name
+            return a
+        }
+        mapView.addAnnotations(convoyAnnotations)
+    }
+
+    func mapView(_ mapView: MLNMapView, viewFor annotation: MLNAnnotation) -> MLNAnnotationView? {
+        if annotation is VehiclePointAnnotation {
+            let v = mapView.dequeueReusableAnnotationView(withIdentifier: "vehicle") ?? MLNAnnotationView(reuseIdentifier: "vehicle")
+            v.frame = CGRect(origin: .zero, size: VehicleIconRenderer.size)
+            v.layer.contents = vehicleImage().cgImage
+            v.transform = CGAffineTransform(rotationAngle: CGFloat((vehicleBearing - mapView.direction) * .pi / 180))
+            return v
+        }
+        if let a = annotation as? ConvoyPointAnnotation, let m = a.member {
+            let v = MLNAnnotationView(reuseIdentifier: nil)
+            v.frame = CGRect(x: 0, y: 0, width: 34, height: 34)
+            let color = UIColor(hex: HexColor(hex: m.color) ?? "#7C4DFF")
+            v.layer.contents = UIGraphicsImageRenderer(size: v.frame.size).image { _ in
+                color.setFill()
+                UIBezierPath(ovalIn: CGRect(x: 2, y: 2, width: 30, height: 30)).fill()
+                UIColor.white.setStroke()
+                let ring = UIBezierPath(ovalIn: CGRect(x: 2, y: 2, width: 30, height: 30)); ring.lineWidth = 2.5; ring.stroke()
+                let text = String(m.name.prefix(1)).uppercased() as NSString
+                let attrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 15, weight: .bold), .foregroundColor: UIColor.white]
+                let size = text.size(withAttributes: attrs)
+                text.draw(at: CGPoint(x: 17 - size.width / 2, y: 17 - size.height / 2), withAttributes: attrs)
+            }.cgImage
+            return v
+        }
+        return nil
+    }
+
+    private func vehicleImage() -> UIImage {
+        VehicleIconRenderer.image(for: settings.vehicleIcon, tint: UIColor(hex: settings.accentOverride ?? theme.interface.accent))
+    }
+
+    private func refreshVehicleView() {
+        guard let a = vehicleAnnotation, let v = mapView.view(for: a) else { return }
+        v.layer.contents = vehicleImage().cgImage
+        v.transform = CGAffineTransform(rotationAngle: CGFloat((vehicleBearing - mapView.direction) * .pi / 180))
+    }
+
     func mapView(_ mapView: MLNMapView, didSelect annotation: MLNAnnotation) {
         if let a = annotation as? MLNPointAnnotation, let p = placeAnnotations[a] { onSelectPlace?(p) }
     }
 
     func setVehicle(_ coordinate: Coordinate?, bearing: Double?) {
-        // MapLibre's own user-location puck follows the device; the snapped position
-        // drives the camera instead.
-        mapView.showsUserHeadingIndicator = coordinate != nil
+        if let bearing { vehicleBearing = bearing }
+        guard let coordinate else {
+            if let a = vehicleAnnotation { mapView.removeAnnotation(a) }
+            vehicleAnnotation = nil
+            mapView.showsUserLocation = surface != .preview
+            return
+        }
+        // While navigating, the snapped position with the chosen vehicle icon replaces
+        // MapLibre's own location dot.
+        mapView.showsUserLocation = false
+        if let a = vehicleAnnotation {
+            a.coordinate = coordinate.cl
+            refreshVehicleView()
+        } else {
+            let a = VehiclePointAnnotation()
+            a.coordinate = coordinate.cl
+            vehicleAnnotation = a
+            mapView.addAnnotation(a)
+        }
     }
 
     func follow(_ coordinate: Coordinate, bearing: Double, speed: Double, animated: Bool) {
@@ -190,12 +303,31 @@ final class VectorMapController: NSObject, MapController, MLNMapViewDelegate {
     }
 
     func mapViewRegionIsChanging(_ mapView: MLNMapView) {
+        refreshVehicleView()
         onCameraHeadingChange?(mapView.direction)
     }
 
     @objc private func longPress(_ g: UILongPressGestureRecognizer) {
         guard g.state == .began else { return }
         onLongPress?(Coordinate(mapView.convert(g.location(in: mapView), toCoordinateFrom: mapView)))
+    }
+}
+/// Renders Studio thumbnails of vector themes with the real tiles and style.
+enum VectorSnapshot {
+    @MainActor
+    static func image(for theme: MapTheme, nightActive: Bool, center: Coordinate, size: CGSize,
+                      tiles: VectorTileConfiguration) async -> UIImage? {
+        guard let url = try? VectorStyleFile.url(for: theme, nightActive: nightActive, tiles: tiles) else { return nil }
+        let camera = MLNMapCamera(lookingAtCenter: center.cl, acrossDistance: 2200,
+                                  pitch: CGFloat(min(theme.camera.pitch, 55)), heading: 0)
+        let options = MLNMapSnapshotOptions(styleURL: url, camera: camera, size: size)
+        let snapshotter = MLNMapSnapshotter(options: options)
+        return await withCheckedContinuation { cont in
+            snapshotter.start { snapshot, _ in
+                _ = snapshotter // Keep the snapshotter alive until it finishes.
+                cont.resume(returning: snapshot?.image)
+            }
+        }
     }
 }
 #endif

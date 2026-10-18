@@ -63,6 +63,10 @@ struct SettingsView: View {
                     NavigationLink("Map controls") { HUDSettingsView() }
                 }
                 Section("Map") {
+                    Picker("Map engine", selection: $settings.value.mapEngine) {
+                        ForEach(MapEngine.allCases) { Text($0.title).tag($0) }
+                    }
+                    .disabled(!model.configuration.vectorEngineAvailable)
                     Toggle("Live traffic", isOn: $settings.value.showsTraffic)
                     Toggle("Points of interest", isOn: $settings.value.showsPOI)
                     Picker("Label density", selection: $settings.value.labelDensity) {
@@ -89,6 +93,13 @@ struct SettingsView: View {
                     }
                     Text(model.carPlayConnected ? "Connected to CarPlay." : "CarPlay uses a simplified, high-contrast version of the theme.")
                         .font(.caption).foregroundStyle(.secondary)
+                }
+                Section("Play") {
+                    NavigationLink { GarageView() } label: {
+                        LabeledContent("Garage", value: "Level \(model.play.progress.level)")
+                    }
+                    NavigationLink("Convoy") { ConvoyView() }
+                    Toggle("Explorer mode", isOn: $settings.value.explorerEnabled)
                 }
                 Section {
                     NavigationLink("Privacy and Data") { PrivacySettingsView() }

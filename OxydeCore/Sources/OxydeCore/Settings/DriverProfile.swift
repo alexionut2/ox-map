@@ -86,8 +86,9 @@ public struct DriverProfile: Codable, Hashable, Sendable, Identifiable {
 
     public static let dailyDriver = DriverProfile(
         id: "profile.daily", name: "Daily Driver",
-        summary: "Balanced day and night themes, full guidance and live traffic.",
-        symbol: "car.fill", dayThemeID: "oxyde.classic", nightThemeID: "oxyde.dark", cameraMode: .headingUp)
+        summary: "The Oxyde Signature look, full guidance and live traffic.",
+        symbol: "car.fill", dayThemeID: "oxyde.signature", nightThemeID: "oxyde.signature", dayNightMode: .off,
+        cameraMode: .headingUp)
 
     public static let nightDriver = DriverProfile(
         id: "profile.night", name: "Night Driver",
@@ -117,5 +118,11 @@ public struct DriverProfile: Codable, Hashable, Sendable, Identifiable {
         cameraMode: .perspective3D, zoomScale: 1.3, labelDensity: .high, showsPOI: true,
         routePreferences: RoutePreferences(avoidTolls: false, avoidHighways: false))
 
-    public static let builtIns: [DriverProfile] = [dailyDriver, nightDriver, performance, minimal, touring]
+    public static let gameMode = DriverProfile(
+        id: "profile.game", name: "Game Mode",
+        summary: "Open-world minimap style, top-down camera and bold labels.",
+        symbol: "gamecontroller.fill", dayThemeID: "oxyde.openworld", nightThemeID: "oxyde.openworld",
+        dayNightMode: .off, cameraMode: .headingUp, zoomScale: 0.9, labelDensity: .low)
+
+    public static let builtIns: [DriverProfile] = [dailyDriver, nightDriver, performance, minimal, touring, gameMode]
 }

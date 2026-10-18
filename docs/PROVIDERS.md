@@ -53,21 +53,28 @@ Themes are real style configurations. On Apple Maps they set `MKStandardMapConfi
 
 The Studio editor reads this matrix (`RendererCapabilities.swift`) and marks unsupported controls instead of pretending they applied. Every built-in theme still looks distinct on Apple Maps through base map, appearance, emphasis, POI, route styling, camera and UI.
 
-## Enabling the vector engine
+## The vector engine (default)
 
-1. In `project.yml`, uncomment the `MapLibre` package and the `- package: MapLibre` dependency.
-2. Get a tile source that serves the **OpenMapTiles** schema, for example a MapTiler key restricted to your bundle ID. These client keys are designed to be embedded; never embed a server secret.
-3. Put the URLs in `Config/Secrets.xcconfig` (see `Config/Secrets.example.xcconfig`) or as GitHub secrets that the workflow writes there.
-4. Rebuild. Map Studio then offers the engine switch, and Diagnostics shows "Vector engine: Ready".
+MapLibre is linked in `project.yml`, and with no keys configured the app uses **OpenFreeMap** (`https://tiles.openfreemap.org/planet`): free, keyless OpenMapTiles-schema tiles and fonts. Its attribution ("OpenFreeMap © OpenMapTiles Data from OpenStreetMap") is shown on the map. Every custom style (Blockworld, Neon City, Executive Navy and the rest) needs this engine, because Apple Maps doesn't allow custom map colors.
+
+The engine is chosen per theme: the vector engine for everything, except satellite and hybrid looks when no imagery source is configured, which switch to Apple Maps automatically. The user can still pick Apple Maps in Map Studio or Settings.
+
+To use another provider (for example MapTiler for satellite imagery or terrain), put its client-side, restricted URLs in `Config/Secrets.xcconfig` (see `Config/Secrets.example.xcconfig`). Never embed a server secret. OpenFreeMap has no uptime guarantee; for a large public release, consider self-hosting or a paid provider.
 
 CarPlay always uses the Apple Maps engine.
 
-## Built-in themes
+## Style extras
+
+Besides colors, a palette sets the **road shape** (smooth, or blocky with square ends), a **neon road glow**, **bold** and **uppercase** labels, and **block buildings** (heights rounded up to 8 m). Older theme files without these fields still import.
+
+## Built-in themes (34)
 
 | Family | Themes |
 |---|---|
-| Essential | Classic, Dark (default), Satellite, Terrain, Minimal, Night Drive, 3D |
-| Automotive | Automotive, Executive*, Cockpit, Luxury* |
-| Futuristic | Neon, Cyber*, Synthwave*, Performance |
+| Essential | Signature (default, oxyde.ro colors), Classic, Dark, Satellite, Terrain, Minimal, Night Drive, 3D |
+| Automotive | Automotive, Executive*, Cockpit, Luxury*, Executive Navy, Grand Tourer, Rally Stage, Track Day |
+| Futuristic | Neon, Cyber*, Synthwave*, Performance, Neon City, Chrome Rain*, Terminal |
+| Game Worlds | Blockworld, Pixel Quest, Open World, Tactical Ops, Retro Arcade* |
+| Artistic | Fantasy Atlas, Blueprint*, Sakura, Arctic, Mars Rover, Deep Ocean |
 
-\* Premium. The brief asked for a "BMW Inspired" theme. It ships as **Oxyde Executive** so the app doesn't use another company's trademark. The look (deep blue-black, ice-blue route, restrained labels) is unchanged.
+\* Premium (cosmetic only). Requests for "BMW", "cyberpunk" and "Minecraft" styles ship under original names (Executive Navy, Neon City, Blockworld) so the app doesn't use other companies' trademarks.

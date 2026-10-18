@@ -23,12 +23,16 @@ final class AppModel {
     let reports: ReportStore
     let premium: PremiumStore
     let cloudSync: CloudSettingsSync
+    let play: PlayStore
+    let convoy: ConvoyStore
     let haptics = Haptics()
 
     /// Whether night styling is active right now, from the day/night setting.
     private(set) var nightActive = false
     private(set) var carPlayConnected = false
     var pendingImport: PendingThemeImport?
+    /// A convoy code from an `oxydemap://convoy?code=` link, waiting for the Convoy sheet.
+    var pendingConvoyCode: String?
     var importError: String?
 
     private var dayNightTimer: Timer?
@@ -49,18 +53,34 @@ final class AppModel {
         let installID = InstallIdentity.current
         let incidentService: IncidentService
         let reportService: CommunityReportService
+        let convoyService: ConvoyService
         if let url = configuration.backendBaseURL {
             let client = OxydeBackendClient(baseURL: url, installID: installID)
             incidentService = client
             reportService = client
+            convoyService = client
         } else {
             incidentService = UnconfiguredIncidentService()
             reportService = UnconfiguredReportService()
+            convoyService = UnconfiguredConvoyService()
         }
         traffic = TrafficStore(service: incidentService)
         reports = ReportStore(service: reportService)
         navigation = NavigationSession(routing: routing, location: location, voice: voice, settings: settings,
                                        persistence: persistence, traffic: traffic)
+        play = PlayStore(settings: settings)
+        convoy = ConvoyStore(service: convoyService, settings: settings)
+
+        location.fixObservers.append { [weak self] fix in
+            guard let self else { return }
+            self.play.handle(fix, nightActive: self.nightActive)
+            self.convoy.handle(fix)
+        }
+        reports.onSent = { [weak self] in self?.play.record(.reportShared) }
+        convoy.onJoined = { [weak self] in self?.play.record(.convoyJoined) }
+        _ = navigation.addListener { [weak self] event in
+            if case .arrived = event { self?.play.record(.arrived) }
+        }
 
         cloudSync.attach(to: settings)
         refreshDayNight()
@@ -94,8 +114,23 @@ final class AppModel {
         activeTheme.isDark(nightActive: nightActive) ? .dark : .light
     }
 
-    var activeEngine: MapEngine {
-        settings.value.mapEngine == .vector && configuration.vectorEngineAvailable ? .vector : .appleMaps
+    /// The vector engine draws every custom style. Apple Maps takes over when the user
+    /// picks it, when MapLibre isn't in the build, or for satellite looks without an
+    /// imagery source.
+    var activeEngine: MapEngine { engine(for: activeTheme) }
+
+    func engine(for theme: MapTheme) -> MapEngine {
+        guard settings.value.mapEngine == .vector, configuration.vectorEngineAvailable else { return .appleMaps }
+        if theme.baseMap != .standard && configuration.vectorTiles?.imageryTileURL == nil { return .appleMaps }
+        return .vector
+    }
+
+    /// Applies a theme as the map style everywhere and counts it toward "Map Stylist".
+    func useTheme(_ theme: MapTheme) {
+        settings.value.defaultThemeID = theme.id
+        settings.value.dayThemeID = theme.id
+        if theme.appearance != .light { settings.value.nightThemeID = theme.id }
+        play.record(.themeApplied(id: theme.id))
     }
 
     func refreshDayNight() {
@@ -135,6 +170,12 @@ final class AppModel {
             defer { if access { url.stopAccessingSecurityScopedResource() } }
             do { pendingImport = PendingThemeImport(theme: try ThemeCodec.importData(Data(contentsOf: url))) }
             catch { importError = error.localizedDescription }
+            return
+        }
+        if url.scheme == ThemeCodec.linkScheme, url.host == "convoy",
+           let code = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?
+               .first(where: { $0.name == "code" })?.value.flatMap(ConvoyCode.normalize) {
+            pendingConvoyCode = code
             return
         }
         if url.scheme == ThemeCodec.linkScheme, url.host == "place",

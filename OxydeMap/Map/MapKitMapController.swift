@@ -59,14 +59,28 @@ final class VehicleAnnotation: NSObject, MKAnnotation {
     init(_ c: CLLocationCoordinate2D) { coordinate = c }
 }
 
-/// Draws the navigation puck: an accent arrowhead with a soft glow.
+final class ConvoyAnnotation: NSObject, MKAnnotation {
+    let member: ConvoyMember
+    dynamic var coordinate: CLLocationCoordinate2D
+    var title: String? { member.name }
+    init(_ member: ConvoyMember) {
+        self.member = member
+        coordinate = (member.coordinate ?? Coordinate(latitude: 0, longitude: 0)).cl
+    }
+}
+
+/// Explorer mode squares, drawn as one overlay.
+final class ExploredOverlay: MKMultiPolygon {}
+
+/// Draws the navigation puck: the chosen vehicle icon with a soft glow.
 final class VehicleAnnotationView: MKAnnotationView {
     private let arrow = UIImageView()
-    var tint: UIColor = .systemBlue { didSet { render() } }
+    var tint: UIColor = .systemBlue { didSet { if tint != oldValue { render() } } }
+    var icon: VehicleIcon = .arrow { didSet { if icon != oldValue { render() } } }
 
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
-        frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+        frame = CGRect(origin: .zero, size: VehicleIconRenderer.size)
         arrow.frame = bounds
         addSubview(arrow)
         displayPriority = .required
@@ -82,22 +96,7 @@ final class VehicleAnnotationView: MKAnnotationView {
     }
 
     private func render() {
-        let size = CGSize(width: 44, height: 44)
-        arrow.image = UIGraphicsImageRenderer(size: size).image { ctx in
-            let g = ctx.cgContext
-            g.setShadow(offset: .zero, blur: 10, color: tint.withAlphaComponent(0.8).cgColor)
-            UIColor.white.setFill()
-            UIBezierPath(ovalIn: CGRect(x: 6, y: 6, width: 32, height: 32)).fill()
-            g.setShadow(offset: .zero, blur: 0, color: nil)
-            tint.setFill()
-            let p = UIBezierPath()
-            p.move(to: CGPoint(x: 22, y: 10))
-            p.addLine(to: CGPoint(x: 32, y: 33))
-            p.addLine(to: CGPoint(x: 22, y: 27))
-            p.addLine(to: CGPoint(x: 12, y: 33))
-            p.close()
-            p.fill()
-        }
+        arrow.image = VehicleIconRenderer.image(for: icon, tint: tint)
     }
 }
 
@@ -129,6 +128,8 @@ final class MapKitMapController: NSObject, MapController {
     private var routeOverlays: [MKOverlay] = []
 
     private var vehicle: VehicleAnnotation?
+    private var exploredOverlay: ExploredOverlay?
+    private var convoyAnnotations: [ConvoyAnnotation] = []
     private var lastVehicleBearing: Double = 0
     private var isRegionChangeFromUser = false
 
@@ -144,6 +145,7 @@ final class MapKitMapController: NSObject, MapController {
         mapView.isRotateEnabled = surface != .carPlay
         mapView.register(VehicleAnnotationView.self, forAnnotationViewWithReuseIdentifier: "vehicle")
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "marker")
+        mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: "convoy")
         if surface == .phone {
             let press = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
             mapView.addGestureRecognizer(press)
@@ -187,6 +189,7 @@ final class MapKitMapController: NSObject, MapController {
         }
         if let v = vehicle, let view = mapView.view(for: v) as? VehicleAnnotationView {
             view.tint = UIColor(hex: settings.accentOverride ?? theme.interface.accent)
+            view.icon = surface == .carPlay ? .arrow : settings.vehicleIcon
         }
     }
 
@@ -284,6 +287,25 @@ final class MapKitMapController: NSObject, MapController {
         mapView.addAnnotations(waypoints.enumerated().map { WaypointAnnotation($0.element, isFinal: $0.offset == waypoints.count - 1) })
     }
 
+    func setExplored(_ polygons: [[Coordinate]]) {
+        if let old = exploredOverlay { mapView.removeOverlay(old) }
+        exploredOverlay = nil
+        guard surface == .phone, !polygons.isEmpty else { return }
+        let shapes = polygons.map { ring -> MKPolygon in
+            let cl = ring.map(\.cl)
+            return MKPolygon(coordinates: cl, count: cl.count)
+        }
+        let overlay = ExploredOverlay(shapes)
+        exploredOverlay = overlay
+        mapView.insertOverlay(overlay, at: 0, level: .aboveRoads)
+    }
+
+    func setConvoy(_ members: [ConvoyMember]) {
+        mapView.removeAnnotations(convoyAnnotations)
+        convoyAnnotations = members.filter { $0.coordinate != nil }.map(ConvoyAnnotation.init)
+        mapView.addAnnotations(convoyAnnotations)
+    }
+
     func setVehicle(_ coordinate: Coordinate?, bearing: Double?) {
         guard let coordinate else {
             if let v = vehicle { mapView.removeAnnotation(v) }
@@ -371,6 +393,12 @@ final class MapKitMapController: NSObject, MapController {
 
 extension MapKitMapController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let explored = overlay as? ExploredOverlay {
+            let r = MKMultiPolygonRenderer(multiPolygon: explored)
+            r.fillColor = UIColor(hex: settings.accentOverride ?? theme.interface.accent).withAlphaComponent(0.16)
+            r.strokeColor = .clear
+            return r
+        }
         guard let line = overlay as? RoutePolyline else { return MKOverlayRenderer(overlay: overlay) }
         let style = theme.resolvedRoute(nightActive: nightActive)
         let r = MKPolylineRenderer(polyline: line)
@@ -405,6 +433,7 @@ extension MapKitMapController: MKMapViewDelegate {
         case is VehicleAnnotation:
             let v = mapView.dequeueReusableAnnotationView(withIdentifier: "vehicle", for: annotation) as! VehicleAnnotationView
             v.tint = accent
+            v.icon = surface == .carPlay ? .arrow : settings.vehicleIcon
             v.setRotation((annotation as! VehicleAnnotation).bearing - mapView.camera.heading)
             return v
         case let a as PlaceAnnotation:
@@ -421,6 +450,15 @@ extension MapKitMapController: MKMapViewDelegate {
             v.glyphImage = UIImage(systemName: Self.symbol(for: a.incident.kind))
             v.titleVisibility = .hidden
             v.displayPriority = .defaultHigh
+            v.canShowCallout = false
+            return v
+        case let a as ConvoyAnnotation:
+            let v = mapView.dequeueReusableAnnotationView(withIdentifier: "convoy", for: annotation) as! MKMarkerAnnotationView
+            v.markerTintColor = UIColor(hex: HexColor(hex: a.member.color) ?? "#7C4DFF")
+            v.glyphText = String(a.member.name.prefix(1)).uppercased()
+            v.glyphImage = nil
+            v.titleVisibility = .visible
+            v.displayPriority = .required
             v.canShowCallout = false
             return v
         case let a as WaypointAnnotation:

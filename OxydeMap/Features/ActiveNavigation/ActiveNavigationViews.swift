@@ -18,7 +18,12 @@ struct ManeuverPanel: View {
                     Image(systemName: step.maneuver.symbolName)
                         .font(.system(size: cockpit ? 52 : 40, weight: .bold))
                         .foregroundStyle(.tint)
+                        .shadow(color: Color.accentColor.opacity(0.5), radius: 8)
                         .frame(width: cockpit ? 70 : 56)
+                        .contentTransition(.symbolEffect(.replace))
+                        .id(step.instruction)
+                        .transition(.asymmetric(insertion: .scale(scale: 0.6).combined(with: .opacity),
+                                                removal: .opacity))
                     VStack(alignment: .leading, spacing: 2) {
                         Text(d.display)
                             .font(theme.interface.typography.font(cockpit ? 40 : 32, weight: .bold))
@@ -44,6 +49,8 @@ struct ManeuverPanel: View {
             }
             .padding(16)
             .oxPanel(theme.interface.panel)
+            .animation(.spring(response: 0.35, dampingFraction: 0.8), value: step.instruction)
+            .animation(.easeOut(duration: 0.3), value: d.display)
             .accessibilityElement(children: .combine)
             .accessibilityIdentifier("nav.maneuver")
         } else if nav.progress == nil {

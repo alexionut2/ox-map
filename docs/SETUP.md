@@ -1,5 +1,17 @@
 # Setup on Windows: cloud build and TestFlight
 
+## Free option: sideload the IPA (no $99 account)
+
+1. Do step 2 below (GitHub Desktop, rename `_github` to `.github`, publish).
+2. On github.com: **Actions > Sideload IPA > Run workflow**. When it's green, open the run and download **OxydeMap-ipa** (a zip with `OxydeMap.ipa` inside). Unzip it.
+3. Install **iTunes** (from apple.com, not the Microsoft Store version) and **Sideloadly** (sideloadly.io) on the PC.
+4. Connect the iPhone by USB and tap **Trust**. In Sideloadly, drag in `OxydeMap.ipa`, enter your Apple ID, and click **Start**.
+5. On the iPhone: **Settings > General > VPN & Device Management**, trust your Apple ID. Then **Settings > Privacy & Security > Developer Mode** on (the phone restarts).
+
+Limits of a free Apple ID: the app stops opening after 7 days until you sideload it again, CarPlay and iCloud sync can't be enabled, and Premium purchases won't load. Maps, search, navigation, voice, Map Studio and trips all work.
+
+The rest of this page is the paid route, which gives TestFlight installs that last 90 days and enables CarPlay later.
+
 You don't need a Mac. GitHub's cloud Macs compile and test the app. The signed build then goes to TestFlight, and you install it on your iPhone from there.
 
 Total time the first time: about an hour of clicking, plus Apple's review of your developer enrollment (often a day or two).

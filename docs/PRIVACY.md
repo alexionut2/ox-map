@@ -6,6 +6,9 @@
   - "Approximate" precision (the default once enabled) keeps start and end rounded to about 100 m and no route shape.
   - "Precise" keeps the driven shape.
 - **iCloud settings sync: off.** When on, only settings and saved profiles sync, through the user's own iCloud key-value store. Trips and places never leave the device.
+- **Explorer mode: off.** When on, explored map squares (about 550 m) are saved only on the iPhone. Garage has an erase button.
+- **XP and achievements: on, local only.** Distance, arrivals and badges are counted on the iPhone and never uploaded. They can be turned off or reset in Garage. Nothing rewards speed.
+- **Convoy: only while joined.** Position is shared with that convoy's members until the driver leaves.
 - **Location:** "While Using" is enough. Background location is used only during active navigation, with the blue indicator shown. Precise accuracy is requested only for navigation, via a temporary request.
 
 ## What leaves the device
@@ -17,6 +20,8 @@
 | Report category, position, heading, optional note | Oxyde backend | Only when the user sends a report |
 | Random install ID | Oxyde backend | With backend requests, for rate limits and one vote per report. It isn't linked to the Apple ID, name or device identifiers. |
 | Purchases | Apple (StoreKit) | Buying or restoring |
+| Position, heading, convoy display name | Oxyde backend, then the convoy's members | Only while in a convoy |
+| Map area being viewed (tile requests) | OpenFreeMap | Showing the vector map |
 
 The backend never returns who submitted a report.
 

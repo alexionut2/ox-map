@@ -26,6 +26,8 @@ struct SpeedometerView: View {
             case .digital:
                 VStack(spacing: 0) {
                     Text(value).font(typography.font(30, weight: .bold)).monospacedDigit()
+                        .contentTransition(.numericText())
+                        .animation(.easeOut(duration: 0.3), value: value)
                     Text(SpeedFormatter.unitLabel(units)).font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
                 }
                 .frame(width: 76, height: 76)
@@ -35,8 +37,12 @@ struct SpeedometerView: View {
                     Circle().stroke(Color.primary.opacity(0.12), lineWidth: 6)
                     Circle().trim(from: 0, to: ringFraction).stroke(.tint, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                         .rotationEffect(.degrees(135))
+                        .shadow(color: Color.accentColor.opacity(0.5), radius: 4)
+                        .animation(.easeOut(duration: 0.5), value: ringFraction)
                     VStack(spacing: 0) {
                         Text(value).font(typography.font(26, weight: .bold)).monospacedDigit()
+                            .contentTransition(.numericText())
+                            .animation(.easeOut(duration: 0.3), value: value)
                         Text(SpeedFormatter.unitLabel(units)).font(.caption2).foregroundStyle(.secondary)
                     }
                 }
@@ -311,9 +317,7 @@ struct LayersSheet: View {
                                 let locked = t.isPremium && !model.premium.isUnlocked
                                 Button {
                                     guard !locked else { return }
-                                    settings.value.defaultThemeID = t.id
-                                    settings.value.dayThemeID = t.id
-                                    if t.isDark(nightActive: true) { settings.value.nightThemeID = t.id }
+                                    model.useTheme(t)
                                     settings.value.cameraMode = t.camera.mode
                                 } label: {
                                     VStack(spacing: 6) {

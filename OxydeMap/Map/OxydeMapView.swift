@@ -22,6 +22,8 @@ struct MapSceneState: Equatable {
     var places: [Place] = []
     var selectedPlaceID: String?
     var waypoints: [Waypoint] = []
+    var explored: [[Coordinate]] = []
+    var convoy: [ConvoyMember] = []
     var vehicle: Coordinate?
     var vehicleBearing: Double?
     var vehicleSpeed: Double = 0
@@ -78,6 +80,8 @@ struct OxydeMapView: UIViewRepresentable {
             c.setPlaces(s.places, selectedID: s.selectedPlaceID)
         }
         if old?.waypoints != s.waypoints { c.setDestinations(s.waypoints) }
+        if old?.explored != s.explored { c.setExplored(s.explored) }
+        if old?.convoy != s.convoy { c.setConvoy(s.convoy) }
         if old?.vehicle != s.vehicle || old?.vehicleBearing != s.vehicleBearing {
             c.setVehicle(s.vehicle, bearing: s.vehicleBearing)
             if s.isFollowing, let v = s.vehicle {
@@ -101,11 +105,21 @@ final class ThemeSnapshotCache {
     private var cache: [String: UIImage] = [:]
     private var inFlight: [String: Task<UIImage?, Never>] = [:]
 
-    func image(for theme: MapTheme, nightActive: Bool, center: Coordinate, size: CGSize) async -> UIImage? {
-        let key = "\(theme.id)-\(theme.hashValue)-\(nightActive)-\(Int(center.latitude * 100))-\(Int(center.longitude * 100))"
+    /// Snapshots run one at a time so a long gallery doesn't load dozens of maps at once.
+    private var queue: Task<Void, Never>?
+
+    func image(for theme: MapTheme, engine: MapEngine, nightActive: Bool, center: Coordinate, size: CGSize) async -> UIImage? {
+        let key = "\(theme.id)-\(theme.hashValue)-\(engine)-\(nightActive)-\(Int(center.latitude * 100))-\(Int(center.longitude * 100))"
         if let img = cache[key] { return img }
         if let task = inFlight[key] { return await task.value }
+        let previous = queue
         let task = Task<UIImage?, Never> {
+            await previous?.value
+            #if canImport(MapLibre)
+            if engine == .vector, let tiles = AppConfiguration.current.vectorTiles {
+                return await VectorSnapshot.image(for: theme, nightActive: nightActive, center: center, size: size, tiles: tiles)
+            }
+            #endif
             let options = MKMapSnapshotter.Options()
             options.preferredConfiguration = MapKitMapController.configuration(for: theme, poi: theme.poiVisibility,
                                                                                traffic: theme.showsTraffic)
@@ -117,6 +131,7 @@ final class ThemeSnapshotCache {
             return snapshot.image
         }
         inFlight[key] = task
+        queue = Task { _ = await task.value }
         let img = await task.value
         inFlight[key] = nil
         if let img { cache[key] = img }

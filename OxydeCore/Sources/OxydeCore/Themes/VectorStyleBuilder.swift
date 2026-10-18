@@ -15,6 +15,14 @@ public struct VectorTileConfiguration: Codable, Hashable, Sendable {
     public var terrainTileJSONURL: String?
     public var attribution: String
 
+    /// OpenFreeMap: free, keyless OpenMapTiles-schema tiles and fonts. The default, so
+    /// every custom map style works without an account. Their terms ask for attribution.
+    public static let openFreeMap = VectorTileConfiguration(
+        vectorTileJSONURL: "https://tiles.openfreemap.org/planet",
+        glyphsURL: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+        fontStack: ["Noto Sans Regular"],
+        attribution: "OpenFreeMap © OpenMapTiles Data from OpenStreetMap")
+
     public init(vectorTileJSONURL: String, glyphsURL: String, fontStack: [String] = ["Noto Sans Regular"],
                 imageryTileURL: String? = nil, terrainTileJSONURL: String? = nil, attribution: String) {
         self.vectorTileJSONURL = vectorTileJSONURL
@@ -34,6 +42,8 @@ public struct VectorTileConfiguration: Codable, Hashable, Sendable {
 public enum VectorStyleBuilder {
     public static let routeSourceID = "oxyde-route"
     public static let incidentSourceID = "oxyde-incidents"
+    /// Squares the driver has explored (opt-in Explorer mode), drawn as a soft tint.
+    public static let exploredSourceID = "oxyde-explored"
 
     public static func style(for theme: MapTheme, nightActive: Bool, configuration: VectorTileConfiguration) -> JSONValue {
         let p = theme.resolvedPalette(nightActive: nightActive)
@@ -75,8 +85,8 @@ public enum VectorStyleBuilder {
                     layers.append(["id": "building-3d", "type": "fill-extrusion", "source": "openmaptiles",
                                    "source-layer": "building", "minzoom": 14,
                                    "paint": ["fill-extrusion-color": color(p.buildingExtrusion),
-                                             "fill-extrusion-height": ["coalesce", ["get", "render_height"], 6],
-                                             "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
+                                             "fill-extrusion-height": blockHeight(["coalesce", ["get", "render_height"], 6], p.blockBuildings),
+                                             "fill-extrusion-base": blockHeight(["coalesce", ["get", "render_min_height"], 0], p.blockBuildings),
                                              "fill-extrusion-opacity": 0.85]])
                 } else {
                     layers.append(["id": "building", "type": "fill", "source": "openmaptiles",
@@ -95,17 +105,34 @@ public enum VectorStyleBuilder {
                 ("primary", ["primary", "trunk"], p.roadMajor, 1.0),
                 ("highway", ["motorway"], p.roadHighway, 1.25),
             ]
+            let shape = p.roadShape
             for (name, cls, _, weight) in classes {
                 layers.append(road("road-\(name)-casing", classes: cls, color: p.roadCasing.withAlpha(alpha),
-                                   width: weight * p.roadWidthScale * 1.35))
+                                   width: weight * p.roadWidthScale * 1.35, shape: shape))
+            }
+            if p.roadGlow > 0 {
+                // A wide blurred copy under the main roads gives neon themes their glow.
+                for (name, cls, c, weight) in classes where weight >= 1 {
+                    var glow = road("road-\(name)-glow", classes: cls, color: c.withAlpha(0.6 * p.roadGlow),
+                                    width: weight * p.roadWidthScale * 3, shape: .smooth)
+                    if case .object(var o) = glow, case .object(var paint)? = o["paint"] {
+                        paint["line-blur"] = .number(6 * p.roadGlow)
+                        o["paint"] = .object(paint)
+                        glow = .object(o)
+                    }
+                    layers.append(glow)
+                }
             }
             for (name, cls, c, weight) in classes {
-                layers.append(road("road-\(name)", classes: cls, color: c.withAlpha(alpha), width: weight * p.roadWidthScale))
+                layers.append(road("road-\(name)", classes: cls, color: c.withAlpha(alpha),
+                                   width: weight * p.roadWidthScale, shape: shape))
             }
         }
 
         // Route and incident layers sit above roads, below labels. The app fills these
         // sources with the active route and incidents.
+        layers.append(["id": "explored", "type": "fill", "source": .string(exploredSourceID),
+                       "paint": ["fill-color": color(theme.interface.accent), "fill-opacity": 0.14]])
         let route = theme.resolvedRoute(nightActive: nightActive)
         let routeFilter: JSONValue = ["==", ["get", "role"], "primary"]
         let altFilter: JSONValue = ["==", ["get", "role"], "alternate"]
@@ -136,6 +163,7 @@ public enum VectorStyleBuilder {
             "sources": .object(sources.merging([
                 routeSourceID: ["type": "geojson", "data": ["type": "FeatureCollection", "features": []]],
                 incidentSourceID: ["type": "geojson", "data": ["type": "FeatureCollection", "features": []]],
+                exploredSourceID: ["type": "geojson", "data": ["type": "FeatureCollection", "features": []]],
             ], uniquingKeysWith: { a, _ in a })),
             "layers": .array(layers),
         ])
@@ -153,11 +181,17 @@ public enum VectorStyleBuilder {
         return .object(o)
     }
 
-    static func road(_ id: String, classes: [String], color c: HexColor, width: Double) -> JSONValue {
+    static func blockHeight(_ height: JSONValue, _ blocky: Bool) -> JSONValue {
+        blocky ? ["*", ["ceil", ["/", height, 8]], 8] : height
+    }
+
+    static func road(_ id: String, classes: [String], color c: HexColor, width: Double,
+                     shape: RoadShape = .smooth) -> JSONValue {
         [
             "id": .string(id), "type": "line", "source": "openmaptiles", "source-layer": "transportation",
             "filter": ["match", ["get", "class"], .array(classes.map { .string($0) }), true, false],
-            "layout": ["line-cap": "round", "line-join": "round"],
+            "layout": shape == .blocky ? ["line-cap": "square", "line-join": "miter"]
+                                       : ["line-cap": "round", "line-join": "round"],
             "paint": [
                 "line-color": color(c),
                 "line-width": ["interpolate", ["exponential", 1.5], ["zoom"],
@@ -177,8 +211,10 @@ public enum VectorStyleBuilder {
     static func labelLayers(theme: MapTheme, palette p: VectorPalette, fonts: [String]) -> [JSONValue] {
         let density = p.labelDensity
         guard density != .none, theme.baseMap != .satellite else { return [] }
-        let font: JSONValue = .array(fonts.map { .string($0) })
+        let font: JSONValue = .array((p.boldLabels ? boldFonts(fonts) : fonts).map { .string($0) })
         let name: JSONValue = ["coalesce", ["get", "name:latin"], ["get", "name"]]
+        let transform: JSONValue = p.uppercaseLabels ? "uppercase" : "none"
+        let spacing: JSONValue = .number(p.uppercaseLabels ? 0.08 : 0)
         let paint: JSONValue = ["text-color": color(p.label), "text-halo-color": color(p.labelHalo), "text-halo-width": 1.4]
         let s = p.labelSizeScale
         var out: [JSONValue] = []
@@ -187,7 +223,8 @@ public enum VectorStyleBuilder {
             out.append(["id": "label-road", "type": "symbol", "source": "openmaptiles",
                         "source-layer": "transportation_name", "minzoom": density == .high ? 12 : 13,
                         "layout": ["symbol-placement": "line", "text-field": name, "text-font": font,
-                                   "text-size": .number(12 * s)],
+                                   "text-size": .number(12 * s), "text-transform": transform,
+                                   "text-letter-spacing": spacing],
                         "paint": paint])
         }
         if theme.poiVisibility != .none, density != .low {
@@ -195,7 +232,7 @@ public enum VectorStyleBuilder {
                 "id": "label-poi", "type": "symbol", "source": "openmaptiles", "source-layer": "poi",
                 "minzoom": density == .high ? 14 : 15,
                 "layout": ["text-field": name, "text-font": font, "text-size": .number(11 * s),
-                           "text-anchor": "top", "text-offset": [0, 0.6]],
+                           "text-anchor": "top", "text-offset": [0, 0.6], "text-transform": transform],
                 "paint": paint,
             ]
             if theme.poiVisibility == .driving {
@@ -215,10 +252,27 @@ public enum VectorStyleBuilder {
         }()
         out.append(["id": "label-place", "type": "symbol", "source": "openmaptiles", "source-layer": "place",
                     "filter": ["match", ["get", "class"], .array(placeClasses.map { .string($0) }), true, false],
-                    "layout": ["text-field": name, "text-font": font,
+                    "layout": ["text-field": name, "text-font": font, "text-transform": transform,
+                               "text-letter-spacing": spacing,
                                "text-size": ["interpolate", ["linear"], ["zoom"], 6, .number(11 * s), 14, .number(16 * s)]],
                     "paint": paint])
         return out
+    }
+
+    /// "Noto Sans Regular" -> "Noto Sans Bold"; stacks without a Regular face stay as they are.
+    static func boldFonts(_ fonts: [String]) -> [String] {
+        fonts.map { $0.replacingOccurrences(of: "Regular", with: "Bold") }
+    }
+
+    /// GeoJSON polygons for explored grid cells.
+    public static func exploredGeoJSON(_ cells: [[Coordinate]]) -> JSONValue {
+        let features: [JSONValue] = cells.filter { $0.count >= 3 }.map { ring in
+            let closed = ring + [ring[0]]
+            return ["type": "Feature", "properties": [:],
+                    "geometry": ["type": "Polygon",
+                                 "coordinates": [.array(closed.map { [.number($0.longitude), .number($0.latitude)] })]]]
+        }
+        return ["type": "FeatureCollection", "features": .array(features)]
     }
 
     /// GeoJSON for the route source: the primary route split into traveled and remaining

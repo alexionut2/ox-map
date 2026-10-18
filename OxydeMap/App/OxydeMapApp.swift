@@ -44,13 +44,21 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(SettingsStore.self) private var settings
+    @State private var showSplash = !ProcessInfo.processInfo.arguments.contains("-uiTestingReset")
 
     var body: some View {
-        Group {
-            if settings.value.hasCompletedOnboarding {
-                MainMapView()
-            } else {
-                OnboardingView()
+        ZStack {
+            Group {
+                if settings.value.hasCompletedOnboarding {
+                    MainMapView()
+                } else {
+                    OnboardingView()
+                }
+            }
+            if showSplash {
+                SplashView { withAnimation(.easeInOut(duration: 0.45)) { showSplash = false } }
+                    .transition(.opacity.combined(with: .scale(scale: 1.08)))
+                    .zIndex(1)
             }
         }
         .tint(model.accentColor)

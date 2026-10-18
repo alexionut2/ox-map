@@ -19,7 +19,7 @@ struct ThemeEditorView: View {
         original = theme
     }
 
-    private var engine: MapEngine { model.activeEngine }
+    private var engine: MapEngine { model.engine(for: draft) }
 
     private func support(_ p: ThemeProperty) -> PropertySupport { RendererCapabilities.support(p, on: engine) }
 
@@ -29,6 +29,7 @@ struct ThemeEditorView: View {
                 OxydeMapView(engine: engine, surface: .preview,
                              state: MapSceneState(theme: draft, nightActive: editNight, settings: settings.value,
                                                   cameraCenter: location.lastFix?.coordinate ?? Coordinate(latitude: 48.8584, longitude: 2.2945)))
+                    .id(engine)
                     .frame(height: 200)
                     .overlay(alignment: .bottomTrailing) {
                         ThemeThumbnailRoute(route: draft.resolvedRoute(nightActive: editNight)).frame(width: 120, height: 60).padding(10)
@@ -166,6 +167,16 @@ struct ThemeEditorView: View {
                 }
             }
             labelContrastNote(p.wrappedValue)
+            row("Road shape", .roadShape) {
+                Picker("Road shape", selection: p.roadShape) {
+                    Text("Smooth").tag(RoadShape.smooth)
+                    Text("Blocky").tag(RoadShape.blocky)
+                }
+            }
+            slider("Neon road glow", p.roadGlow, 0...1, .roadGlow, format: "%.0f%%", scale: 100)
+            row("Bold labels", .labelStyle) { Toggle("Bold labels", isOn: p.boldLabels) }
+            row("Uppercase labels", .labelStyle) { Toggle("Uppercase labels", isOn: p.uppercaseLabels) }
+            row("Block buildings", .buildingColors) { Toggle("Block buildings", isOn: p.blockBuildings) }
         } header: {
             HStack { Text(editNight ? "Map colors (night)" : "Map colors"); Spacer(); SupportBadge(support: support(.landColor)) }
         }
@@ -252,12 +263,13 @@ struct ThemeEditorView: View {
         }
     }
 
-    private func slider(_ title: String, _ b: Binding<Double>, _ range: ClosedRange<Double>, _ p: ThemeProperty, format: String = "%.1f") -> some View {
+    private func slider(_ title: String, _ b: Binding<Double>, _ range: ClosedRange<Double>, _ p: ThemeProperty,
+                        format: String = "%.1f", scale: Double = 1) -> some View {
         VStack(alignment: .leading) {
             HStack {
                 Text(title)
                 Spacer()
-                Text(String(format: format, b.wrappedValue)).monospacedDigit().foregroundStyle(.secondary)
+                Text(String(format: format, b.wrappedValue * scale)).monospacedDigit().foregroundStyle(.secondary)
                 SupportBadge(support: support(p))
             }
             Slider(value: b, in: range)
@@ -291,6 +303,7 @@ struct ThemeEditorView: View {
         settings.value.defaultThemeID = t.id
         settings.value.dayThemeID = t.id
         if t.appearance != .light { settings.value.nightThemeID = t.id }
+        model.play.record(.themeApplied(id: t.id))
         dismiss()
     }
 }

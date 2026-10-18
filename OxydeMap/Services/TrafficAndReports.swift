@@ -122,6 +122,8 @@ final class ReportStore {
     @ObservationIgnored private var limiter = RateLimiter()
     @ObservationIgnored private var undoTask: Task<Void, Never>?
     @ObservationIgnored private var votedIDs: Set<String> = []
+    /// Called after a report reaches the server (used for XP).
+    @ObservationIgnored var onSent: (() -> Void)?
     let regionPolicy = ReportRegionPolicy.conservativeDefault
 
     init(service: CommunityReportService) { self.service = service }
@@ -154,6 +156,7 @@ final class ReportStore {
                 limiter.record(at: Date())
                 traffic.insertLocal(r)
                 state = .sent(category)
+                onSent?()
             } catch {
                 state = .failed(error.localizedDescription)
             }
