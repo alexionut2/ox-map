@@ -51,7 +51,10 @@ final class OxydeMapUITests: XCTestCase {
         finishOnboarding()
         app.buttons["main.settings"].tap()
         let diagnostics = app.buttons["settings.diagnostics"]
-        if !diagnostics.waitForExistence(timeout: 3) { app.swipeUp() }
+        // The row sits near the bottom of a long form; scroll until it is on screen.
+        for _ in 0..<8 where !(diagnostics.exists && diagnostics.isHittable) {
+            app.swipeUp()
+        }
         diagnostics.tap()
         XCTAssertTrue(app.navigationBars["Diagnostics"].waitForExistence(timeout: 3))
     }
