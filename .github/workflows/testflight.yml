@@ -1,0 +1,119 @@
+# Builds a signed release and uploads it to TestFlight, so the app can be installed on an
+# iPhone without owning a Mac. Run it from the Actions tab ("Run workflow").
+#
+# Required repository secrets (docs/SETUP.md, step 4):
+#   APPLE_TEAM_ID                 10-character Team ID from developer.apple.com
+#   APP_BUNDLE_ID                 e.g. com.yourname.oxydemap (must exist in App Store Connect)
+#   ASC_KEY_ID                    App Store Connect API key ID
+#   ASC_ISSUER_ID                 App Store Connect API issuer ID
+#   ASC_KEY_P8_BASE64             The .p8 key file, base64-encoded
+# Optional:
+#   OX_BACKEND_BASE_URL           Your deployed backend, e.g. https://oxyde-backend.example.com/
+#   OX_ENTITLEMENTS               Set to OxydeMap/Resources/OxydeMap-Full.entitlements once Apple grants CarPlay
+name: TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: "What to test in this build"
+        required: false
+        default: ""
+
+jobs:
+  testflight:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets
+        env:
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          BUNDLE: ${{ secrets.APP_BUNDLE_ID }}
+          KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ISSUER: ${{ secrets.ASC_ISSUER_ID }}
+          P8: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        run: |
+          missing=""
+          for v in TEAM BUNDLE KEY_ID ISSUER P8; do [ -z "${!v}" ] && missing="$missing $v"; done
+          if [ -n "$missing" ]; then echo "::error::Missing secrets:$missing. See docs/SETUP.md step 4."; exit 1; fi
+
+      - name: Select Xcode
+        run: |
+          # App Store uploads must use a current SDK, so take the newest release Xcode on the runner.
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | grep -vi -e beta -e rc | sort -V | tail -1)"
+          xcodebuild -version
+
+      - name: Write configuration
+        env:
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          BUNDLE: ${{ secrets.APP_BUNDLE_ID }}
+          BACKEND: ${{ secrets.OX_BACKEND_BASE_URL }}
+          ENTITLEMENTS: ${{ secrets.OX_ENTITLEMENTS }}
+        run: |
+          {
+            echo "OX_TEAM_ID = $TEAM"
+            echo "OX_BUNDLE_ID = $BUNDLE"
+            # xcconfig treats // as a comment, so escape it.
+            if [ -n "$BACKEND" ]; then echo "OX_BACKEND_BASE_URL = ${BACKEND//\/\//\/\$()\/}"; fi
+            if [ -n "$ENTITLEMENTS" ]; then echo "OX_ENTITLEMENTS = $ENTITLEMENTS"; fi
+          } > Config/Secrets.xcconfig
+          # Build numbers must increase for every upload.
+          sed -i '' "s/^CURRENT_PROJECT_VERSION = .*/CURRENT_PROJECT_VERSION = ${{ github.run_number }}/" Config/Base.xcconfig
+          cat Config/Secrets.xcconfig
+
+      - name: Generate the Xcode project
+        run: |
+          brew install xcodegen xcbeautify
+          xcodegen generate
+
+      - name: Install the App Store Connect key
+        env:
+          P8: ${{ secrets.ASC_KEY_P8_BASE64 }}
+          KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8
+
+      - name: Archive
+        env:
+          KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ISSUER: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project OxydeMap.xcodeproj -scheme OxydeMap -configuration Release \
+            -destination "generic/platform=iOS" -archivePath build/OxydeMap.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8 \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER" | xcbeautify
+
+      - name: Export and upload to TestFlight
+        env:
+          KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ISSUER: ${{ secrets.ASC_ISSUER_ID }}
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          cat > build/ExportOptions.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${TEAM}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          PLIST
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath build/OxydeMap.xcarchive -exportPath build/export \
+            -exportOptionsPlist build/ExportOptions.plist -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${KEY_ID}.p8 \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER" | xcbeautify
+          echo "Uploaded build ${{ github.run_number }}. It appears in TestFlight after Apple finishes processing (usually 10 to 30 minutes)."
+
+      - name: Remove the key
+        if: always()
+        run: rm -rf ~/.appstoreconnect

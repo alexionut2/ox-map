@@ -1,0 +1,903 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02A848122AD22404AECB2850 /* SavedPlacesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E78CA82521A8189AD3C5F /* SavedPlacesView.swift */; };
+		0466CED1F51684BD99308963 /* ReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7210E6BC47CFB140E6B6889A /* ReportSheet.swift */; };
+		0D5B519E89097272AA774709 /* NavigationSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBF188D92D7EBA8FCF5181AC /* NavigationSession.swift */; };
+		0F89F05C756A32200CF54B7C /* VoiceGuidanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131D4D4425876B35307A80A1 /* VoiceGuidanceManager.swift */; };
+		15F4646B770DFAAE588D676D /* OxydeMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA19BF0DB4F4AD69A4371C88 /* OxydeMapApp.swift */; };
+		18EDD710BD9A72043BC70E6F /* PremiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37264042FD21CEC4C6594B0E /* PremiumView.swift */; };
+		1BD8F9FFE0B15056BBC133BD /* MapStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FD40EFFB9E9E7E41AB98DC /* MapStudioView.swift */; };
+		22CC6067B36A90649F29097A /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39391E09F82840052A4316EB /* SearchView.swift */; };
+		32BE686D877AA79C2AC4D123 /* ActiveNavigationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC825C3C56925EC204E0E5F1 /* ActiveNavigationViews.swift */; };
+		333AAA8219FED6E719518EB9 /* VectorMapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC2EAA7311DA4D2E7C2C519 /* VectorMapController.swift */; };
+		442C24C79A82A99BB6C80C64 /* CarPlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DEF57F1A24FA20402A0D99 /* CarPlayController.swift */; };
+		4B5051EE7D32351A5E5CE692 /* MapKitSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B23D81418AF681CEC515FC0 /* MapKitSearchService.swift */; };
+		519FE8C732F479341C724EA5 /* ThemeEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77C89DE86AD95557A909D7F /* ThemeEditorView.swift */; };
+		57181AE5E6D9A841D24043E4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFAC2107E72A59813789DD6 /* SettingsView.swift */; };
+		57DFAE861E3FF45E08F486A8 /* OxydeMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FF6557ECC9D47626047A2F1 /* OxydeMapUITests.swift */; };
+		5D2D9946D93D63D0B371C03B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726AD64B59C148A9149836D3 /* OnboardingView.swift */; };
+		66314A7D3DE19EBE4893204D /* AppIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FD7599ADF26AA8DD3CCFA1 /* AppIntegrationTests.swift */; };
+		71C0C8BADE86C32E25B3C881 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E56EC501A4B83E197B977758 /* Localizable.xcstrings */; };
+		7D4C1720FD7CBF7E8C1F208F /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6008CC50E99F3C62D4B308A8 /* AppConfiguration.swift */; };
+		7E8E54647756AA7282560C2D /* MapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0CBA7B12AC3E7572ED8DAE /* MapController.swift */; };
+		7ECFBEBFAFF9B77886AF4B6F /* TrafficAndReports.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF5C3F4ECAF459D6F0A66B7 /* TrafficAndReports.swift */; };
+		815F4433218EEF93E1B5627F /* OxydeCore in Frameworks */ = {isa = PBXBuildFile; productRef = 88D732A5C3BA18DFF59392E1 /* OxydeCore */; };
+		831BD00C494208D5B7460A4A /* MapKitMapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08AB2A4B5CCB8533E93DED5 /* MapKitMapController.swift */; };
+		891689E8849A4C6927005324 /* TripDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76D0798D0B286E1D20DE9BF /* TripDashboardView.swift */; };
+		98A247028D7F9B4A916D7717 /* RoutePreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A841831F1B4DC547814203 /* RoutePreviewPanel.swift */; };
+		A8CDB8DDEDC87FCFB3585136 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E8A28F989B2F23B132C912 /* CarPlaySceneDelegate.swift */; };
+		AD22634E6DC8865259630CB9 /* CarPlay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EAE82CBEC711E1BA8EEE39E /* CarPlay.framework */; };
+		BA47203ECED3DA13D69801F7 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF10F16D30AF5E818D7ACC47 /* DesignSystem.swift */; };
+		BD39244AE4CF3E09F929AEC5 /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89A89B3D9023F4FE233ED73 /* DiagnosticsView.swift */; };
+		C70BF7A8CA99F782A7CAF802 /* Stores.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B9E1F4FDA9CBD1231D375E /* Stores.swift */; };
+		C7F76C8563A860EFEE05411A /* MapOverlays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A8BA7789245784E652F3D8C /* MapOverlays.swift */; };
+		D2479371B57F948AD75F28D6 /* MapKitRoutingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2113BC4B8F4CC83A7F5544F3 /* MapKitRoutingService.swift */; };
+		D718A1F1DAD58DA34D53943F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7F47DE9A7B6116E729EED8 /* Models.swift */; };
+		D94C43BBB451308B19FAC037 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2456D9976BF2B4ED40B34E4F /* Assets.xcassets */; };
+		D9D82D492265E1D467E3D6E9 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470A4BA026A560A431B9C1AE /* LocationManager.swift */; };
+		E18D307AF89A51B3F067634B /* MainMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB85841D16D0CDFA52091A42 /* MainMapView.swift */; };
+		F2F858B6581E54843233C14A /* ReportIncidentIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5603BCD18D83404CB78F38DD /* ReportIncidentIntent.swift */; };
+		F3D15C16330895DA110A2E18 /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539776D722F9492FEA8D7E46 /* PremiumStore.swift */; };
+		F91D70A4FCFB6D5CDCC9CD38 /* OxydeMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98545EA9BA5AB47F21049DF /* OxydeMapView.swift */; };
+		FB1D01D394A29DCC6A43694C /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A730B76B9A972EF6EE53AB /* AppModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D42382FE10626B436FF7BB94 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30234A1E6A2B56C20DBED254 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 433E9B2E21EAEABE9C298909;
+			remoteInfo = OxydeMap;
+		};
+		F2E10B5FBD73F0B96291E4CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30234A1E6A2B56C20DBED254 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 433E9B2E21EAEABE9C298909;
+			remoteInfo = OxydeMap;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03E8A28F989B2F23B132C912 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		119541C68DF5248446CAF6E6 /* OxydeMapTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OxydeMapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		131D4D4425876B35307A80A1 /* VoiceGuidanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceGuidanceManager.swift; sourceTree = "<group>"; };
+		2113BC4B8F4CC83A7F5544F3 /* MapKitRoutingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitRoutingService.swift; sourceTree = "<group>"; };
+		2456D9976BF2B4ED40B34E4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2A7F47DE9A7B6116E729EED8 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		2AFAC2107E72A59813789DD6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		2D0CBA7B12AC3E7572ED8DAE /* MapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapController.swift; sourceTree = "<group>"; };
+		2EAE82CBEC711E1BA8EEE39E /* CarPlay.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CarPlay.framework; path = System/Library/Frameworks/CarPlay.framework; sourceTree = SDKROOT; };
+		37264042FD21CEC4C6594B0E /* PremiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumView.swift; sourceTree = "<group>"; };
+		39391E09F82840052A4316EB /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		470A4BA026A560A431B9C1AE /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		4A575627AF52429F10ED2C37 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		5263F5B6262982E64BC337D6 /* OxydeMapUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = OxydeMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		539776D722F9492FEA8D7E46 /* PremiumStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
+		5603BCD18D83404CB78F38DD /* ReportIncidentIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportIncidentIntent.swift; sourceTree = "<group>"; };
+		6008CC50E99F3C62D4B308A8 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		69A841831F1B4DC547814203 /* RoutePreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePreviewPanel.swift; sourceTree = "<group>"; };
+		6FF6557ECC9D47626047A2F1 /* OxydeMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OxydeMapUITests.swift; sourceTree = "<group>"; };
+		7210E6BC47CFB140E6B6889A /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
+		726AD64B59C148A9149836D3 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		8A8BA7789245784E652F3D8C /* MapOverlays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapOverlays.swift; sourceTree = "<group>"; };
+		8B23D81418AF681CEC515FC0 /* MapKitSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitSearchService.swift; sourceTree = "<group>"; };
+		95A730B76B9A972EF6EE53AB /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		A08AB2A4B5CCB8533E93DED5 /* MapKitMapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapKitMapController.swift; sourceTree = "<group>"; };
+		A4B9E1F4FDA9CBD1231D375E /* Stores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stores.swift; sourceTree = "<group>"; };
+		AC825C3C56925EC204E0E5F1 /* ActiveNavigationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveNavigationViews.swift; sourceTree = "<group>"; };
+		AEC2EAA7311DA4D2E7C2C519 /* VectorMapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorMapController.swift; sourceTree = "<group>"; };
+		B2DEF57F1A24FA20402A0D99 /* CarPlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlayController.swift; sourceTree = "<group>"; };
+		B6F328D3FE4AF3C69FF3EBE1 /* OxydeMap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OxydeMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B74AC97FE99CE661B4CC528F /* OxydeCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = OxydeCore; path = OxydeCore; sourceTree = SOURCE_ROOT; };
+		BDF5C3F4ECAF459D6F0A66B7 /* TrafficAndReports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficAndReports.swift; sourceTree = "<group>"; };
+		BF10F16D30AF5E818D7ACC47 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		C89A89B3D9023F4FE233ED73 /* DiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsView.swift; sourceTree = "<group>"; };
+		D98545EA9BA5AB47F21049DF /* OxydeMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OxydeMapView.swift; sourceTree = "<group>"; };
+		D9FD7599ADF26AA8DD3CCFA1 /* AppIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntegrationTests.swift; sourceTree = "<group>"; };
+		DA19BF0DB4F4AD69A4371C88 /* OxydeMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OxydeMapApp.swift; sourceTree = "<group>"; };
+		E2FD40EFFB9E9E7E41AB98DC /* MapStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapStudioView.swift; sourceTree = "<group>"; };
+		E56EC501A4B83E197B977758 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		E76D0798D0B286E1D20DE9BF /* TripDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripDashboardView.swift; sourceTree = "<group>"; };
+		E77C89DE86AD95557A909D7F /* ThemeEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeEditorView.swift; sourceTree = "<group>"; };
+		EB85841D16D0CDFA52091A42 /* MainMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMapView.swift; sourceTree = "<group>"; };
+		F73E78CA82521A8189AD3C5F /* SavedPlacesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPlacesView.swift; sourceTree = "<group>"; };
+		FBF188D92D7EBA8FCF5181AC /* NavigationSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationSession.swift; sourceTree = "<group>"; };
+		FE01E7843BEB776139220861 /* OxydeMap.storekit */ = {isa = PBXFileReference; path = OxydeMap.storekit; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		70F9E549566BD956D48335E3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				815F4433218EEF93E1B5627F /* OxydeCore in Frameworks */,
+				AD22634E6DC8865259630CB9 /* CarPlay.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		04AD2075FFEA1A8CED5D3BCA /* RoutePreview */ = {
+			isa = PBXGroup;
+			children = (
+				69A841831F1B4DC547814203 /* RoutePreviewPanel.swift */,
+			);
+			path = RoutePreview;
+			sourceTree = "<group>";
+		};
+		0573DA5BBD23F4E32A7FA1A4 /* MainMap */ = {
+			isa = PBXGroup;
+			children = (
+				EB85841D16D0CDFA52091A42 /* MainMapView.swift */,
+				8A8BA7789245784E652F3D8C /* MapOverlays.swift */,
+			);
+			path = MainMap;
+			sourceTree = "<group>";
+		};
+		05C417E704C9C37DEA4E1624 /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				470A4BA026A560A431B9C1AE /* LocationManager.swift */,
+			);
+			path = Location;
+			sourceTree = "<group>";
+		};
+		16830D800FE8FB49B531E778 /* CarPlay */ = {
+			isa = PBXGroup;
+			children = (
+				B2DEF57F1A24FA20402A0D99 /* CarPlayController.swift */,
+				03E8A28F989B2F23B132C912 /* CarPlaySceneDelegate.swift */,
+			);
+			path = CarPlay;
+			sourceTree = "<group>";
+		};
+		2AE30D04B793EC4783945C61 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B6F328D3FE4AF3C69FF3EBE1 /* OxydeMap.app */,
+				119541C68DF5248446CAF6E6 /* OxydeMapTests.xctest */,
+				5263F5B6262982E64BC337D6 /* OxydeMapUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2AE35AB39029A3F9C4643A6D /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				539776D722F9492FEA8D7E46 /* PremiumStore.swift */,
+			);
+			path = Store;
+			sourceTree = "<group>";
+		};
+		3D0AABDB1DDC175F0FE86042 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2456D9976BF2B4ED40B34E4F /* Assets.xcassets */,
+				E56EC501A4B83E197B977758 /* Localizable.xcstrings */,
+				FE01E7843BEB776139220861 /* OxydeMap.storekit */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		596BCD04EF65481C564C4873 /* Reports */ = {
+			isa = PBXGroup;
+			children = (
+				7210E6BC47CFB140E6B6889A /* ReportSheet.swift */,
+			);
+			path = Reports;
+			sourceTree = "<group>";
+		};
+		5BC5933AF6052DFBBE91D482 /* Trips */ = {
+			isa = PBXGroup;
+			children = (
+				E76D0798D0B286E1D20DE9BF /* TripDashboardView.swift */,
+			);
+			path = Trips;
+			sourceTree = "<group>";
+		};
+		6B25FA393905C8832A9AF335 /* OxydeMapUITests */ = {
+			isa = PBXGroup;
+			children = (
+				6FF6557ECC9D47626047A2F1 /* OxydeMapUITests.swift */,
+			);
+			path = OxydeMapUITests;
+			sourceTree = "<group>";
+		};
+		6D82A0F2542CA6FF960AF9DD /* Diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				C89A89B3D9023F4FE233ED73 /* DiagnosticsView.swift */,
+			);
+			path = Diagnostics;
+			sourceTree = "<group>";
+		};
+		73F1DA45AB0078397C9643CE = {
+			isa = PBXGroup;
+			children = (
+				F1693A20B4A450BB5D988791 /* Config */,
+				8996A457E9D5DCADD0D2429D /* OxydeMap */,
+				F62F6640AB67082212FC7A60 /* OxydeMapTests */,
+				6B25FA393905C8832A9AF335 /* OxydeMapUITests */,
+				9B058EDC6CD580950559B494 /* Packages */,
+				BA543F52E32BE357DE694460 /* Frameworks */,
+				2AE30D04B793EC4783945C61 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7B07FA49CE0CE0D34FA3E146 /* Premium */ = {
+			isa = PBXGroup;
+			children = (
+				37264042FD21CEC4C6594B0E /* PremiumView.swift */,
+			);
+			path = Premium;
+			sourceTree = "<group>";
+		};
+		87E76854B808E38A351CC380 /* Places */ = {
+			isa = PBXGroup;
+			children = (
+				F73E78CA82521A8189AD3C5F /* SavedPlacesView.swift */,
+			);
+			path = Places;
+			sourceTree = "<group>";
+		};
+		8996A457E9D5DCADD0D2429D /* OxydeMap */ = {
+			isa = PBXGroup;
+			children = (
+				95402EEEF5F1393CDE181E3E /* App */,
+				16830D800FE8FB49B531E778 /* CarPlay */,
+				E188039A3CE346D5F0116621 /* DesignSystem */,
+				9C293C6E052FC77B5177B0A2 /* Features */,
+				EF1D75E48411178DC5229313 /* Intents */,
+				05C417E704C9C37DEA4E1624 /* Location */,
+				9A2235E644A95B14F1C2747C /* Map */,
+				FAA240554542442B1C6EF7C9 /* Navigation */,
+				F329C1852F06C25085B4BB0C /* Persistence */,
+				3D0AABDB1DDC175F0FE86042 /* Resources */,
+				E057DEC05A0273321B89A403 /* Services */,
+				2AE35AB39029A3F9C4643A6D /* Store */,
+			);
+			path = OxydeMap;
+			sourceTree = "<group>";
+		};
+		8EFE79807940E9577F084867 /* Studio */ = {
+			isa = PBXGroup;
+			children = (
+				E2FD40EFFB9E9E7E41AB98DC /* MapStudioView.swift */,
+				E77C89DE86AD95557A909D7F /* ThemeEditorView.swift */,
+			);
+			path = Studio;
+			sourceTree = "<group>";
+		};
+		95402EEEF5F1393CDE181E3E /* App */ = {
+			isa = PBXGroup;
+			children = (
+				6008CC50E99F3C62D4B308A8 /* AppConfiguration.swift */,
+				95A730B76B9A972EF6EE53AB /* AppModel.swift */,
+				DA19BF0DB4F4AD69A4371C88 /* OxydeMapApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		9A2235E644A95B14F1C2747C /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				2D0CBA7B12AC3E7572ED8DAE /* MapController.swift */,
+				A08AB2A4B5CCB8533E93DED5 /* MapKitMapController.swift */,
+				D98545EA9BA5AB47F21049DF /* OxydeMapView.swift */,
+				AEC2EAA7311DA4D2E7C2C519 /* VectorMapController.swift */,
+			);
+			path = Map;
+			sourceTree = "<group>";
+		};
+		9B058EDC6CD580950559B494 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				B74AC97FE99CE661B4CC528F /* OxydeCore */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		9C293C6E052FC77B5177B0A2 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				A52D31F855D386D721422149 /* ActiveNavigation */,
+				6D82A0F2542CA6FF960AF9DD /* Diagnostics */,
+				0573DA5BBD23F4E32A7FA1A4 /* MainMap */,
+				E93399A419C7CB291E7DF1CB /* Onboarding */,
+				87E76854B808E38A351CC380 /* Places */,
+				7B07FA49CE0CE0D34FA3E146 /* Premium */,
+				596BCD04EF65481C564C4873 /* Reports */,
+				04AD2075FFEA1A8CED5D3BCA /* RoutePreview */,
+				EF23BE33E01B2B9474E9BBF5 /* Search */,
+				EF15E2F353F400CFF2FB946E /* Settings */,
+				8EFE79807940E9577F084867 /* Studio */,
+				5BC5933AF6052DFBBE91D482 /* Trips */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		A52D31F855D386D721422149 /* ActiveNavigation */ = {
+			isa = PBXGroup;
+			children = (
+				AC825C3C56925EC204E0E5F1 /* ActiveNavigationViews.swift */,
+			);
+			path = ActiveNavigation;
+			sourceTree = "<group>";
+		};
+		BA543F52E32BE357DE694460 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2EAE82CBEC711E1BA8EEE39E /* CarPlay.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E057DEC05A0273321B89A403 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2113BC4B8F4CC83A7F5544F3 /* MapKitRoutingService.swift */,
+				8B23D81418AF681CEC515FC0 /* MapKitSearchService.swift */,
+				BDF5C3F4ECAF459D6F0A66B7 /* TrafficAndReports.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E188039A3CE346D5F0116621 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				BF10F16D30AF5E818D7ACC47 /* DesignSystem.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		E93399A419C7CB291E7DF1CB /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				726AD64B59C148A9149836D3 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		EF15E2F353F400CFF2FB946E /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				2AFAC2107E72A59813789DD6 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		EF1D75E48411178DC5229313 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				5603BCD18D83404CB78F38DD /* ReportIncidentIntent.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		EF23BE33E01B2B9474E9BBF5 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				39391E09F82840052A4316EB /* SearchView.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		F1693A20B4A450BB5D988791 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				4A575627AF52429F10ED2C37 /* Base.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		F329C1852F06C25085B4BB0C /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				2A7F47DE9A7B6116E729EED8 /* Models.swift */,
+				A4B9E1F4FDA9CBD1231D375E /* Stores.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		F62F6640AB67082212FC7A60 /* OxydeMapTests */ = {
+			isa = PBXGroup;
+			children = (
+				D9FD7599ADF26AA8DD3CCFA1 /* AppIntegrationTests.swift */,
+			);
+			path = OxydeMapTests;
+			sourceTree = "<group>";
+		};
+		FAA240554542442B1C6EF7C9 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				FBF188D92D7EBA8FCF5181AC /* NavigationSession.swift */,
+				131D4D4425876B35307A80A1 /* VoiceGuidanceManager.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		433E9B2E21EAEABE9C298909 /* OxydeMap */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 15C7FA3EC7AA60E838B9806E /* Build configuration list for PBXNativeTarget "OxydeMap" */;
+			buildPhases = (
+				0B08F3FF89666A762292BA21 /* Sources */,
+				A1BFFE47F6E1A108DC09E3F1 /* Resources */,
+				70F9E549566BD956D48335E3 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OxydeMap;
+			packageProductDependencies = (
+				88D732A5C3BA18DFF59392E1 /* OxydeCore */,
+			);
+			productName = OxydeMap;
+			productReference = B6F328D3FE4AF3C69FF3EBE1 /* OxydeMap.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4FAA04A7D0D04B482711D916 /* OxydeMapTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A932087E31778EFACCD0CC9F /* Build configuration list for PBXNativeTarget "OxydeMapTests" */;
+			buildPhases = (
+				DAB5F8F0AB791CFF2CCEBB48 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8FCEF4A3FA6223CE669FD47A /* PBXTargetDependency */,
+			);
+			name = OxydeMapTests;
+			productName = OxydeMapTests;
+			productReference = 119541C68DF5248446CAF6E6 /* OxydeMapTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7CC192455102C1E494E5DF36 /* OxydeMapUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40FADD2A6FD73111DAE9A543 /* Build configuration list for PBXNativeTarget "OxydeMapUITests" */;
+			buildPhases = (
+				04F35EDFB5156EE9D744761E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A6B63CE251C6530D11F04AE1 /* PBXTargetDependency */,
+			);
+			name = OxydeMapUITests;
+			productName = OxydeMapUITests;
+			productReference = 5263F5B6262982E64BC337D6 /* OxydeMapUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		30234A1E6A2B56C20DBED254 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					433E9B2E21EAEABE9C298909 = {
+						DevelopmentTeam = "$(OX_TEAM_ID)";
+						ProvisioningStyle = Automatic;
+					};
+					4FAA04A7D0D04B482711D916 = {
+						DevelopmentTeam = "$(OX_TEAM_ID)";
+					};
+					7CC192455102C1E494E5DF36 = {
+						DevelopmentTeam = "$(OX_TEAM_ID)";
+						TestTargetID = 433E9B2E21EAEABE9C298909;
+					};
+				};
+			};
+			buildConfigurationList = 6EDB9CB1516127FB69A1C546 /* Build configuration list for PBXProject "OxydeMap" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 73F1DA45AB0078397C9643CE;
+			packageReferences = (
+				2B079CC9AEA462B45408F136 /* XCLocalSwiftPackageReference "OxydeCore" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				433E9B2E21EAEABE9C298909 /* OxydeMap */,
+				4FAA04A7D0D04B482711D916 /* OxydeMapTests */,
+				7CC192455102C1E494E5DF36 /* OxydeMapUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1BFFE47F6E1A108DC09E3F1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D94C43BBB451308B19FAC037 /* Assets.xcassets in Resources */,
+				71C0C8BADE86C32E25B3C881 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		04F35EDFB5156EE9D744761E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57DFAE861E3FF45E08F486A8 /* OxydeMapUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0B08F3FF89666A762292BA21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				32BE686D877AA79C2AC4D123 /* ActiveNavigationViews.swift in Sources */,
+				7D4C1720FD7CBF7E8C1F208F /* AppConfiguration.swift in Sources */,
+				FB1D01D394A29DCC6A43694C /* AppModel.swift in Sources */,
+				442C24C79A82A99BB6C80C64 /* CarPlayController.swift in Sources */,
+				A8CDB8DDEDC87FCFB3585136 /* CarPlaySceneDelegate.swift in Sources */,
+				BA47203ECED3DA13D69801F7 /* DesignSystem.swift in Sources */,
+				BD39244AE4CF3E09F929AEC5 /* DiagnosticsView.swift in Sources */,
+				D9D82D492265E1D467E3D6E9 /* LocationManager.swift in Sources */,
+				E18D307AF89A51B3F067634B /* MainMapView.swift in Sources */,
+				7E8E54647756AA7282560C2D /* MapController.swift in Sources */,
+				831BD00C494208D5B7460A4A /* MapKitMapController.swift in Sources */,
+				D2479371B57F948AD75F28D6 /* MapKitRoutingService.swift in Sources */,
+				4B5051EE7D32351A5E5CE692 /* MapKitSearchService.swift in Sources */,
+				C7F76C8563A860EFEE05411A /* MapOverlays.swift in Sources */,
+				1BD8F9FFE0B15056BBC133BD /* MapStudioView.swift in Sources */,
+				D718A1F1DAD58DA34D53943F /* Models.swift in Sources */,
+				0D5B519E89097272AA774709 /* NavigationSession.swift in Sources */,
+				5D2D9946D93D63D0B371C03B /* OnboardingView.swift in Sources */,
+				15F4646B770DFAAE588D676D /* OxydeMapApp.swift in Sources */,
+				F91D70A4FCFB6D5CDCC9CD38 /* OxydeMapView.swift in Sources */,
+				F3D15C16330895DA110A2E18 /* PremiumStore.swift in Sources */,
+				18EDD710BD9A72043BC70E6F /* PremiumView.swift in Sources */,
+				F2F858B6581E54843233C14A /* ReportIncidentIntent.swift in Sources */,
+				0466CED1F51684BD99308963 /* ReportSheet.swift in Sources */,
+				98A247028D7F9B4A916D7717 /* RoutePreviewPanel.swift in Sources */,
+				02A848122AD22404AECB2850 /* SavedPlacesView.swift in Sources */,
+				22CC6067B36A90649F29097A /* SearchView.swift in Sources */,
+				57181AE5E6D9A841D24043E4 /* SettingsView.swift in Sources */,
+				C70BF7A8CA99F782A7CAF802 /* Stores.swift in Sources */,
+				519FE8C732F479341C724EA5 /* ThemeEditorView.swift in Sources */,
+				7ECFBEBFAFF9B77886AF4B6F /* TrafficAndReports.swift in Sources */,
+				891689E8849A4C6927005324 /* TripDashboardView.swift in Sources */,
+				333AAA8219FED6E719518EB9 /* VectorMapController.swift in Sources */,
+				0F89F05C756A32200CF54B7C /* VoiceGuidanceManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DAB5F8F0AB791CFF2CCEBB48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66314A7D3DE19EBE4893204D /* AppIntegrationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8FCEF4A3FA6223CE669FD47A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 433E9B2E21EAEABE9C298909 /* OxydeMap */;
+			targetProxy = D42382FE10626B436FF7BB94 /* PBXContainerItemProxy */;
+		};
+		A6B63CE251C6530D11F04AE1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 433E9B2E21EAEABE9C298909 /* OxydeMap */;
+			targetProxy = F2E10B5FBD73F0B96291E4CE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		41E7EF24F7416997AB63C486 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OX_BUNDLE_ID).tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OxydeMap.app/OxydeMap";
+			};
+			name = Release;
+		};
+		46D4AF9A0F5AF8D7703F9CC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4A575627AF52429F10ED2C37 /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		4ACF78C3A8FC9F20C64BA2A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4A575627AF52429F10ED2C37 /* Base.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		702044CF3A2CF072B914CF53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OX_BUNDLE_ID).uitests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = OxydeMap;
+			};
+			name = Release;
+		};
+		AA50DE70BF16736477A2283E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = OxydeMap/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C8154E5BBFA07942A7E0D54F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = OxydeMap/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D2088BAD2636453940645D1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OX_BUNDLE_ID).tests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OxydeMap.app/OxydeMap";
+			};
+			name = Debug;
+		};
+		F00BC43011D90748756EC1DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(OX_BUNDLE_ID).uitests";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = OxydeMap;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		15C7FA3EC7AA60E838B9806E /* Build configuration list for PBXNativeTarget "OxydeMap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA50DE70BF16736477A2283E /* Debug */,
+				C8154E5BBFA07942A7E0D54F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		40FADD2A6FD73111DAE9A543 /* Build configuration list for PBXNativeTarget "OxydeMapUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F00BC43011D90748756EC1DB /* Debug */,
+				702044CF3A2CF072B914CF53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6EDB9CB1516127FB69A1C546 /* Build configuration list for PBXProject "OxydeMap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4ACF78C3A8FC9F20C64BA2A4 /* Debug */,
+				46D4AF9A0F5AF8D7703F9CC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A932087E31778EFACCD0CC9F /* Build configuration list for PBXNativeTarget "OxydeMapTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2088BAD2636453940645D1E /* Debug */,
+				41E7EF24F7416997AB63C486 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		2B079CC9AEA462B45408F136 /* XCLocalSwiftPackageReference "OxydeCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = OxydeCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		88D732A5C3BA18DFF59392E1 /* OxydeCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OxydeCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 30234A1E6A2B56C20DBED254 /* Project object */;
+}

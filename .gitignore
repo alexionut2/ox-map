@@ -1,0 +1,27 @@
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# SwiftPM
+.build/
+.swiftpm/
+Package.resolved
+
+# Secrets and per-developer config
+Config/Secrets.xcconfig
+*.p8
+*.p12
+*.mobileprovision
+.env
+
+# Backend data
+backend/data/
+node_modules/
+
+.DS_Store
+Thumbs.db

@@ -1,0 +1,26 @@
+// Shared build settings. Per-developer values live in Secrets.xcconfig (not committed).
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1
+PRODUCT_BUNDLE_IDENTIFIER = $(OX_BUNDLE_ID)
+DEVELOPMENT_TEAM = $(OX_TEAM_ID)
+
+OX_BUNDLE_ID = com.oxydemap.app
+OX_TEAM_ID =
+
+// Empty means "not configured"; the app shows that state in Settings > Diagnostics.
+OX_BACKEND_BASE_URL =
+OX_VECTOR_TILEJSON_URL =
+OX_VECTOR_GLYPHS_URL =
+OX_VECTOR_FONT_STACK =
+OX_VECTOR_IMAGERY_TILE_URL =
+OX_VECTOR_TERRAIN_TILEJSON_URL =
+OX_VECTOR_ATTRIBUTION =
+OX_PREMIUM_PRODUCT_IDS = com.oxydemap.premium.monthly,com.oxydemap.premium.yearly,com.oxydemap.premium.lifetime
+
+// Device builds use plain entitlements until Apple grants CarPlay. Set OX_ENTITLEMENTS
+// to OxydeMap/Resources/OxydeMap-Full.entitlements after it is granted.
+OX_ENTITLEMENTS = OxydeMap/Resources/OxydeMap.entitlements
+CODE_SIGN_ENTITLEMENTS = $(OX_ENTITLEMENTS)
+CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*] = OxydeMap/Resources/OxydeMap-Full.entitlements
+
+#include? "Secrets.xcconfig"

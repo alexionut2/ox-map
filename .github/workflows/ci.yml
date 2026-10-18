@@ -1,0 +1,76 @@
+# Builds and tests on every push and pull request, on GitHub's macOS runners.
+# No Apple account or secrets are needed for this workflow.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-tests:
+    name: Core logic tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.10"
+      - name: Test OxydeCore
+        working-directory: OxydeCore
+        run: swift test
+
+  backend-tests:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test backend
+        working-directory: backend
+        run: npm test
+
+  ios:
+    name: iOS build and tests (simulator)
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          # App Store uploads must use a current SDK, so take the newest release Xcode on the runner.
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | grep -vi -e beta -e rc | sort -V | tail -1)"
+          xcodebuild -version
+      - name: Generate the Xcode project
+        run: |
+          brew install xcodegen xcbeautify
+          xcodegen generate
+      - name: Pick a simulator
+        id: sim
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys,re; d=json.load(sys.stdin)['devices']; ks=sorted((k for k in d if 'iOS' in k), key=lambda k: [int(x) for x in re.findall(r'\d+', k)], reverse=True); print(next(x['udid'] for k in ks for x in d[k] if x['name'].startswith('iPhone')))")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+      - name: Build and test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project OxydeMap.xcodeproj -scheme OxydeMap \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -resultBundlePath TestResults.xcresult \
+            | tee xcodebuild.log | xcbeautify || (tail -200 xcodebuild.log; exit 1)
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: |
+            TestResults.xcresult
+            xcodebuild.log
+          if-no-files-found: ignore

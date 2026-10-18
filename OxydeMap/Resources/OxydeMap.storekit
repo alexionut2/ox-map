@@ -1,0 +1,40 @@
+{
+  "identifier" : "6F3A2C1E",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "39.99",
+      "familyShareable" : true,
+      "internalID" : "6740000003",
+      "localizations" : [ { "description" : "All premium themes, forever.", "displayName" : "Oxyde Premium Lifetime", "locale" : "en_US" } ],
+      "productID" : "com.oxydemap.premium.lifetime",
+      "referenceName" : "Premium Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : { "_failTransactionsEnabled" : false },
+  "subscriptionGroups" : [
+    {
+      "id" : "21500001",
+      "localizations" : [],
+      "name" : "Oxyde Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [], "codeOffers" : [], "displayPrice" : "2.99", "familyShareable" : true,
+          "groupNumber" : 1, "internalID" : "6740000001", "introductoryOffer" : null,
+          "localizations" : [ { "description" : "Premium themes, billed monthly.", "displayName" : "Oxyde Premium Monthly", "locale" : "en_US" } ],
+          "productID" : "com.oxydemap.premium.monthly", "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly", "subscriptionGroupID" : "21500001", "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [], "codeOffers" : [], "displayPrice" : "19.99", "familyShareable" : true,
+          "groupNumber" : 1, "internalID" : "6740000002", "introductoryOffer" : null,
+          "localizations" : [ { "description" : "Premium themes, billed yearly.", "displayName" : "Oxyde Premium Yearly", "locale" : "en_US" } ],
+          "productID" : "com.oxydemap.premium.yearly", "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium Yearly", "subscriptionGroupID" : "21500001", "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : { "major" : 3, "minor" : 0 }
+}
