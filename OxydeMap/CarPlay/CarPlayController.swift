@@ -11,6 +11,7 @@ final class CarPlayMapViewController: UIViewController {
     let map: MapController
     /// Called when the car switches between light and dark (headlights, time of day).
     var onAppearanceChange: (() -> Void)?
+    private var observingTraits = false
 
     init(map: MapController) {
         self.map = map
@@ -30,9 +31,13 @@ final class CarPlayMapViewController: UIViewController {
         ])
     }
 
-    override func traitCollectionDidChange(_ previous: UITraitCollection?) {
-        super.traitCollectionDidChange(previous)
-        if previous?.userInterfaceStyle != traitCollection.userInterfaceStyle { onAppearanceChange?() }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !observingTraits else { return }
+        observingTraits = true
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (vc: CarPlayMapViewController, _: UITraitCollection) in
+            vc.onAppearanceChange?()
+        }
     }
 }
 

@@ -50,7 +50,7 @@ struct SearchView: View {
             }
             .listStyle(.insetGrouped)
             .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search places, addresses or coordinates")
-            .searchFocused($focused)
+            .searchFocusedIfAvailable($focused)
             .onSubmit(of: .search) { Task { await runTextSearch() } }
             .onChange(of: query) { _, q in
                 error = nil
@@ -220,6 +220,18 @@ struct SearchView: View {
             }
         } catch {
             self.error = error.localizedDescription
+        }
+    }
+}
+
+private extension View {
+    /// `searchFocused` needs iOS 18; on iOS 17 the search field simply isn't auto-focused.
+    @ViewBuilder
+    func searchFocusedIfAvailable(_ binding: FocusState<Bool>.Binding) -> some View {
+        if #available(iOS 18.0, *) {
+            searchFocused(binding)
+        } else {
+            self
         }
     }
 }

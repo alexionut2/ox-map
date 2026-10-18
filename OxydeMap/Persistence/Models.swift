@@ -121,7 +121,7 @@ final class TripRecord {
         destinationName = summary.destinationName
     }
 
-    var shape: [Coordinate] { encodedShape.flatMap(PolylineCodec.decode) ?? [] }
+    var shape: [Coordinate] { encodedShape.flatMap { PolylineCodec.decode($0) } ?? [] }
     var start: Coordinate? { startLatitude.flatMap { lat in startLongitude.map { Coordinate(latitude: lat, longitude: $0) } } }
     var end: Coordinate? { endLatitude.flatMap { lat in endLongitude.map { Coordinate(latitude: lat, longitude: $0) } } }
 }

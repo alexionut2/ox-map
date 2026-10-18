@@ -18,6 +18,13 @@ public struct Announcement: Sendable, Equatable {
     public var stepIndex: Int?
     /// Imminent maneuvers interrupt anything still being spoken.
     public var interrupts: Bool
+
+    public init(text: String, stage: Stage, stepIndex: Int? = nil, interrupts: Bool) {
+        self.text = text
+        self.stage = stage
+        self.stepIndex = stepIndex
+        self.interrupts = interrupts
+    }
 }
 
 /// Sentence templates for spoken guidance. The default is English; the app supplies a
